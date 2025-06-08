@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Any
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
 from geopy.exc import GeocoderUnavailable
-from core.data.models import Pothole, GPSPoint
+from core.data.models import Pothole, GPSPoint, SeverityLevel
 from core.data.repository import PotholeRepository
 from core.gps import GPSProvider
 
@@ -91,7 +91,7 @@ class PotholeService:
             logger.error(f"Geocoding error: {str(e)}")
             return default_result
 
-    def _get_location_info(self, location: GPSPoint) -> tuple[str, str, str] | tuple[Any] | Any:
+    def _get_location_info(self, location: GPSPoint) -> Tuple[str, str, str]:
         """Get location info with async execution"""
         cache_key = f"{location.latitude:.6f},{location.longitude:.6f}"
 
@@ -111,14 +111,14 @@ class PotholeService:
         street, city, region = self._get_location_info(location)
 
         return Pothole(
-            location=location.dict(),  # Convert to dictionary
+            location=location,  # Pass GPSPoint object directly
             street=street,
             city=city,
             region=region,
-            severity_level=detection['severity'].value,  # Convert enum to string if needed
+            severity_level=detection['severity'],  # Pass enum directly
             severity_score=detection['score'],
             confidence=detection['confidence'],
-            detected_at=datetime.now()
+            detected_at=datetime.datetime.now()
         )
 
     def _is_duplicate_location(self, location: GPSPoint) -> bool:
@@ -171,3 +171,7 @@ class PotholeService:
                 processed_detections.append(detection)
 
         return processed_detections
+
+    def cleanup(self):
+        """Cleanup resources"""
+        self.geocoding_executor.shutdown(wait=True)

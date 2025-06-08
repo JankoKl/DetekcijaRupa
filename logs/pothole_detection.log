@@ -1,0 +1,734 @@
+2025-06-08 14:18:35,460 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:18:35,461 - root - INFO - Initializing detector...
+2025-06-08 14:18:35,709 - root - INFO - Initializing repository...
+2025-06-08 14:18:35,761 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:18:35,762 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:18:35,762 - root - INFO - Initializing GPS provider...
+2025-06-08 14:18:35,762 - root - INFO - Using GPS simulator
+2025-06-08 14:18:35,763 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:18:35,764 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:18:35,764 - root - INFO - Initializing service...
+2025-06-08 14:18:35,794 - core.services.pothole_service - INFO - Loaded geocoding cache with 6 entries
+2025-06-08 14:18:36,679 - root - INFO - Telegram bot thread started
+2025-06-08 14:18:36,679 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:18:36,795 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:18:36,851 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:18:38,518 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:18:38,738 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:18:38,741 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:18:38,794 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:18:38,795 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:18:42,740 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:18:42,742 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:18:42,743 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:18:42,744 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:18:42,955 - core.detection.processor - ERROR - Processing error: 1 validation error for Pothole
+severity_level
+  Input should be 'Low', 'Medium' or 'High' [type=enum, input_value=<SeverityLevel.LOW: 'Low'>, input_type=SeverityLevel]
+    For further information visit https://errors.pydantic.dev/2.11/v/enum
+Traceback (most recent call last):
+  File "C:\Users\Janko\Documents\DetekcijaRupa\core\detection\processor.py", line 41, in process_stream
+    detections = self.service.process_frame(frame)
+  File "C:\Users\Janko\Documents\DetekcijaRupa\core\services\pothole_service.py", line 161, in process_frame
+    pothole = self._create_pothole_object(detection, location)
+  File "C:\Users\Janko\Documents\DetekcijaRupa\core\services\pothole_service.py", line 113, in _create_pothole_object
+    return Pothole(
+        location=location,  # Pass GPSPoint object directly
+    ...<6 lines>...
+        detected_at=datetime.datetime.now()
+    )
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for Pothole
+severity_level
+  Input should be 'Low', 'Medium' or 'High' [type=enum, input_value=<SeverityLevel.LOW: 'Low'>, input_type=SeverityLevel]
+    For further information visit https://errors.pydantic.dev/2.11/v/enum
+2025-06-08 14:18:42,969 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:18:42,987 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:18:42,987 - root - INFO - Starting cleanup...
+2025-06-08 14:18:43,006 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:18:43,006 - root - INFO - Application shutdown complete
+2025-06-08 14:22:00,260 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:22:00,261 - root - INFO - Initializing detector...
+2025-06-08 14:22:00,463 - root - INFO - Initializing repository...
+2025-06-08 14:22:00,467 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:22:00,467 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:22:00,467 - root - INFO - Initializing GPS provider...
+2025-06-08 14:22:00,468 - root - INFO - Using GPS simulator
+2025-06-08 14:22:00,468 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:22:00,469 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:22:00,469 - root - INFO - Initializing service...
+2025-06-08 14:22:00,504 - core.services.pothole_service - INFO - Loaded geocoding cache with 7 entries
+2025-06-08 14:22:01,169 - root - INFO - Telegram bot thread started
+2025-06-08 14:22:01,169 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:22:01,207 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:22:01,256 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:22:02,889 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:22:03,080 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:22:03,081 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:22:03,127 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:22:03,128 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:22:05,792 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:05,793 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:05,795 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:05,796 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:06,044 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:06,045 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:06,045 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:06,047 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:06,533 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:06,535 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:06,536 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:06,537 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:06,538 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:07,037 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:07,038 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:07,038 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:07,039 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:07,039 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:07,484 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:07,485 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:07,486 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:07,487 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:07,488 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,023 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:08,024 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:08,024 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:08,025 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:08,025 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:08,503 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,504 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,506 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,507 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,509 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,510 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,511 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,512 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:08,514 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:09,056 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,056 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,057 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,057 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,057 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,058 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,058 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,058 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,059 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:09,527 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:09,529 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:09,530 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:09,531 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:09,532 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:09,533 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:10,059 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:10,060 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:10,060 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:10,061 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:10,061 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:10,061 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:10,571 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:10,572 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:10,574 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:10,575 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:10,576 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:10,579 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:22:11,052 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:11,053 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:11,053 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:11,054 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:11,054 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:11,055 - core.data.repository - ERROR - Database save error: table potholes has no column named altitude
+2025-06-08 14:22:11,067 - core.gps.simulator - INFO - Received signal 2, shutting down...
+2025-06-08 14:22:11,142 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:22:11,149 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:22:11,155 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:22:11,155 - root - INFO - Starting cleanup...
+2025-06-08 14:22:11,155 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:22:11,155 - root - INFO - Application shutdown complete
+2025-06-08 14:23:27,085 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:23:27,086 - root - INFO - Initializing detector...
+2025-06-08 14:23:27,329 - root - INFO - Initializing repository...
+2025-06-08 14:23:27,343 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:23:27,343 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:23:27,343 - root - INFO - Initializing GPS provider...
+2025-06-08 14:23:27,343 - root - INFO - Using GPS simulator
+2025-06-08 14:23:27,345 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:23:27,345 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:23:27,346 - root - INFO - Initializing service...
+2025-06-08 14:23:27,379 - core.services.pothole_service - INFO - Loaded geocoding cache with 13 entries
+2025-06-08 14:23:28,134 - root - INFO - Telegram bot thread started
+2025-06-08 14:23:28,135 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:23:28,276 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:23:28,327 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:23:29,810 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:23:30,021 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:23:30,024 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:23:30,075 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:23:30,076 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:23:33,139 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:33,141 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:33,142 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:33,144 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:33,383 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:33,384 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:33,384 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:33,385 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:34,126 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:34,128 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:34,129 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:34,131 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:34,132 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:34,398 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:34,398 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:34,399 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:34,400 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:34,401 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:35,016 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,017 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,019 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,020 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,022 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,358 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:35,358 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:35,358 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:35,359 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:35,359 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:35,853 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,854 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,856 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,857 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,858 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,859 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,860 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,862 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:35,863 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:36,371 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,371 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,371 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,372 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,372 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,372 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,373 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,373 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,373 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:36,871 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:36,873 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:36,874 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:36,875 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:36,877 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:36,878 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:37,387 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:37,387 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:37,388 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:37,388 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:37,388 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:37,389 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:37,828 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:37,830 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:37,831 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:37,832 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:37,833 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:37,835 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:38,357 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:38,357 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:38,358 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:38,358 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:38,359 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:38,360 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:39,864 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:39,865 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:39,866 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:39,868 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:39,870 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:39,958 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:39,958 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:39,959 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:39,959 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:39,960 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:40,242 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:23:41,267 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,276 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,283 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,291 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,297 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,303 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,310 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:41,456 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:41,460 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:41,463 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:41,466 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:41,469 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:41,473 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:41,476 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,176 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,178 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,179 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,180 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,182 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,183 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,184 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,186 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:23:42,426 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,426 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,427 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,428 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,428 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,429 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,430 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:42,430 - core.data.repository - ERROR - Database save error: table potholes has no column named gps_accuracy
+2025-06-08 14:23:43,734 - core.gps.simulator - INFO - Received signal 2, shutting down...
+2025-06-08 14:23:43,745 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:23:43,753 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:23:43,755 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:23:43,755 - root - INFO - Starting cleanup...
+2025-06-08 14:23:43,755 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:23:43,756 - root - INFO - Application shutdown complete
+2025-06-08 14:24:17,411 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:24:17,411 - root - INFO - Initializing detector...
+2025-06-08 14:24:17,535 - root - INFO - Initializing repository...
+2025-06-08 14:24:17,538 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:24:17,538 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:24:17,538 - root - INFO - Initializing GPS provider...
+2025-06-08 14:24:17,538 - root - INFO - Using GPS simulator
+2025-06-08 14:24:17,539 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:24:17,539 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:24:17,539 - root - INFO - Initializing service...
+2025-06-08 14:24:17,567 - core.services.pothole_service - INFO - Loaded geocoding cache with 22 entries
+2025-06-08 14:24:18,160 - root - INFO - Telegram bot thread started
+2025-06-08 14:24:18,160 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:24:18,193 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:24:18,233 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:24:19,800 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:24:19,971 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:24:19,972 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:24:20,027 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:24:20,028 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:24:22,035 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,036 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,037 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,039 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,217 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:22,218 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:22,219 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:22,220 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:22,889 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,890 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,891 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,893 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:22,894 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:23,210 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:23,211 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:23,211 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:23,212 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:23,212 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:23,670 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:23,671 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:23,673 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:23,674 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:23,675 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,208 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:24,208 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:24,209 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:24,209 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:24,209 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:24,730 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,731 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,733 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,734 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,735 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,736 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,737 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,739 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:24,740 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:24:25,217 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,217 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,218 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,218 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,219 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,220 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,220 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,221 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:25,221 - core.data.repository - ERROR - Database save error: table potholes has no column named country
+2025-06-08 14:24:26,541 - core.gps.simulator - INFO - Received signal 2, shutting down...
+2025-06-08 14:24:26,578 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:24:26,585 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:24:26,585 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:24:26,586 - root - INFO - Starting cleanup...
+2025-06-08 14:24:26,586 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:24:26,586 - root - INFO - Application shutdown complete
+2025-06-08 14:24:55,226 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:24:55,226 - root - INFO - Initializing detector...
+2025-06-08 14:24:55,360 - root - INFO - Initializing repository...
+2025-06-08 14:24:55,363 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:24:55,364 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:24:55,364 - root - INFO - Initializing GPS provider...
+2025-06-08 14:24:55,364 - root - INFO - Using GPS simulator
+2025-06-08 14:24:55,365 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:24:55,365 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:24:55,365 - root - INFO - Initializing service...
+2025-06-08 14:24:55,400 - core.services.pothole_service - INFO - Loaded geocoding cache with 26 entries
+2025-06-08 14:24:56,172 - root - INFO - Telegram bot thread started
+2025-06-08 14:24:56,172 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:24:56,212 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:24:56,256 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:24:58,030 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:24:58,207 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:24:58,208 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:24:58,264 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:24:58,265 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:25:00,344 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:00,346 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:00,347 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:00,348 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:00,526 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:00,527 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:00,528 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:00,529 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:01,018 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:01,020 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:01,021 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:01,022 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:01,023 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:01,547 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:01,547 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:01,548 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:01,548 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:01,549 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:02,023 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:02,024 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:02,026 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:02,027 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:02,028 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:02,524 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:02,525 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:02,525 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:02,526 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:02,526 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,008 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,010 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,012 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,013 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,014 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,015 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,016 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,018 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,019 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:03,537 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,538 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,538 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,539 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,539 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,540 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,540 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,541 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,541 - core.data.repository - ERROR - Database save error: table potholes has no column named processed
+2025-06-08 14:25:03,817 - core.gps.simulator - INFO - Received signal 2, shutting down...
+2025-06-08 14:25:03,864 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:25:03,870 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:25:03,875 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:25:03,876 - root - INFO - Starting cleanup...
+2025-06-08 14:25:03,876 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:25:03,876 - root - INFO - Application shutdown complete
+2025-06-08 14:25:37,517 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:25:37,517 - root - INFO - Initializing detector...
+2025-06-08 14:25:37,648 - root - INFO - Initializing repository...
+2025-06-08 14:25:37,652 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:25:37,652 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:25:37,652 - root - INFO - Initializing GPS provider...
+2025-06-08 14:25:37,652 - root - INFO - Using GPS simulator
+2025-06-08 14:25:37,653 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:25:37,653 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:25:37,654 - root - INFO - Initializing service...
+2025-06-08 14:25:37,685 - core.services.pothole_service - INFO - Loaded geocoding cache with 30 entries
+2025-06-08 14:25:38,257 - root - INFO - Telegram bot thread started
+2025-06-08 14:25:38,257 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:25:38,289 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:25:38,332 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:25:39,899 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:25:40,059 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:25:40,061 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:25:40,114 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:25:40,115 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:25:42,075 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:42,076 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:42,078 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:42,079 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:42,286 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:42,287 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:42,288 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:42,289 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:43,019 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:43,021 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:43,023 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:43,024 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:43,025 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:43,326 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:43,329 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:43,332 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:43,337 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:43,341 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:44,526 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:44,527 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:44,529 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:44,530 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:44,531 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:25:44,627 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:44,627 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:44,628 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:44,628 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:44,628 - core.data.repository - ERROR - Database save error: table potholes has no column named verified
+2025-06-08 14:25:45,596 - core.gps.simulator - INFO - Received signal 2, shutting down...
+2025-06-08 14:25:45,844 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:25:45,860 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:25:45,860 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:25:45,861 - root - INFO - Starting cleanup...
+2025-06-08 14:25:45,861 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:25:45,861 - root - INFO - Application shutdown complete
+2025-06-08 14:26:03,991 - root - INFO - Starting Pothole Detection System
+2025-06-08 14:26:03,992 - root - INFO - Initializing detector...
+2025-06-08 14:26:04,119 - root - INFO - Initializing repository...
+2025-06-08 14:26:04,122 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 14:26:04,122 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 14:26:04,122 - root - INFO - Initializing GPS provider...
+2025-06-08 14:26:04,123 - root - INFO - Using GPS simulator
+2025-06-08 14:26:04,123 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 14:26:04,124 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 14:26:04,124 - root - INFO - Initializing service...
+2025-06-08 14:26:04,152 - core.services.pothole_service - INFO - Loaded geocoding cache with 33 entries
+2025-06-08 14:26:04,786 - root - INFO - Telegram bot thread started
+2025-06-08 14:26:04,786 - root - INFO - Starting video processing from p.mp4
+2025-06-08 14:26:04,824 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 14:26:04,864 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 14:26:06,479 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 14:26:06,641 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 14:26:06,642 - telegram.ext.Application - INFO - Application started
+2025-06-08 14:26:06,687 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 14:26:06,688 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 14:26:08,838 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:26:08,839 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:26:08,841 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:26:08,842 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 14:26:09,043 - core.data.repository - INFO - Saved pothole at (44.009165, 21.008497)
+2025-06-08 14:26:09,043 - core.services.pothole_service - INFO - Detected Low pothole at (44.009165, 21.008497)
+2025-06-08 14:26:16,841 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:26:26,882 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:26:36,924 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:26:41,257 - core.data.repository - ERROR - Database save error: database is locked
+2025-06-08 14:26:46,969 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:26:57,011 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:27:07,055 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 14:27:14,720 - core.gps.simulator - INFO - Received signal 2, shutting down...
+2025-06-08 14:27:14,779 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:27:14,783 - core.capture.frame_capture - INFO - Released frame capture resources
+2025-06-08 14:27:14,787 - core.detection.processor - INFO - Video processing stopped
+2025-06-08 14:27:14,787 - root - INFO - Starting cleanup...
+2025-06-08 14:27:14,787 - core.data.repository - INFO - Database connections closed
+2025-06-08 14:27:14,787 - root - INFO - Application shutdown complete
+2025-06-08 15:19:53,907 - root - INFO - Starting Pothole Detection System
+2025-06-08 15:19:53,908 - root - INFO - Initializing detector...
+2025-06-08 15:19:54,134 - root - INFO - Initializing repository...
+2025-06-08 15:19:54,146 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 15:19:54,146 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 15:19:54,146 - root - INFO - Initializing GPS provider...
+2025-06-08 15:19:54,146 - root - INFO - Using GPS simulator
+2025-06-08 15:19:54,148 - core.gps.simulator - INFO - GPS simulator update thread started
+2025-06-08 15:19:54,148 - core.gps.simulator - INFO - GPS simulator initialized
+2025-06-08 15:19:54,148 - root - INFO - Initializing service...
+2025-06-08 15:19:54,183 - core.services.pothole_service - INFO - Loaded geocoding cache with 34 entries
+2025-06-08 15:19:55,132 - root - INFO - Telegram bot thread started
+2025-06-08 15:19:55,133 - root - INFO - Starting video processing from p.mp4
+2025-06-08 15:19:55,255 - core.capture.frame_capture - INFO - Initialized video file: p.mp4
+2025-06-08 15:19:55,306 - core.detection.processor - INFO - Initialized video processor for source: p.mp4
+2025-06-08 15:19:57,377 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-08 15:19:57,615 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 15:19:57,617 - telegram.ext.Application - INFO - Application started
+2025-06-08 15:19:57,671 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 15:19:57,671 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-08 15:19:57,827 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 15:19:57,914 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 15:19:57,997 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 15:20:02,319 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 15:20:02,320 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 15:20:02,321 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 15:20:02,323 - root - WARNING - No depth estimate provided, assuming 0 cm.
+2025-06-08 15:20:02,574 - core.data.repository - INFO - Saved pothole at (44.010224, 21.004866)
+2025-06-08 15:20:02,574 - core.services.pothole_service - INFO - Detected Low pothole at (44.010224, 21.004866)
+2025-06-08 15:20:07,888 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 15:20:13,048 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 409 Conflict"
+2025-06-08 15:20:13,050 - telegram.ext.Updater - ERROR - Exception happened while polling for updates.
+Traceback (most recent call last):
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\ext\_utils\networkloop.py", line 115, in network_retry_loop
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\ext\_utils\networkloop.py", line 108, in do_action
+    return action_cb_task.result()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\ext\_updater.py", line 335, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\ext\_extbot.py", line 669, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<9 lines>...
+    )
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\_bot.py", line 4601, in get_updates
+    await self._post(
+    ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    ),
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\_bot.py", line 697, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\ext\_extbot.py", line 369, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\_bot.py", line 726, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\request\_baserequest.py", line 197, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\Janko\Documents\DetekcijaRupa\.venv\Lib\site-packages\telegram\request\_baserequest.py", line 355, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-06-08 15:20:24,139 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 15:20:29,203 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 15:20:29,211 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 15:20:29,212 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 15:20:29,215 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,216 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,217 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,217 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,217 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,218 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,218 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,218 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,218 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,219 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,219 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,219 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,219 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,220 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,220 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,220 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,221 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,222 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,222 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,222 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,223 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,224 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,224 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,224 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,225 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,225 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,226 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,226 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,226 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,227 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,227 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,227 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,228 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,228 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,228 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,229 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:29,539 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendDocument "HTTP/1.1 200 OK"
+2025-06-08 15:20:31,015 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 15:20:31,023 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 15:20:31,023 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 15:20:31,024 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,024 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,025 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,026 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,027 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,028 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,028 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,028 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,028 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,028 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,029 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,029 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,029 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,029 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,029 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:31,139 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 15:20:32,457 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 15:20:32,545 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/answerCallbackQuery "HTTP/1.1 200 OK"
+2025-06-08 15:20:32,549 - core.data.repository - INFO - Database schema initialized successfully
+2025-06-08 15:20:32,550 - core.data.repository - INFO - Repository initialized with database: data/potholes.db
+2025-06-08 15:20:32,561 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,562 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,562 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,563 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,563 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,563 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,564 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,564 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,564 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,564 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,564 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,565 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,565 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,565 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,565 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,565 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,565 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,566 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,567 - core.data.repository - WARNING - Skipping invalid pothole record: None is not a valid SeverityLevel
+2025-06-08 15:20:32,678 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/editMessageText "HTTP/1.1 200 OK"
+2025-06-08 15:20:35,919 - core.data.repository - ERROR - Database save error: database is locked
+2025-06-08 15:20:42,509 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"

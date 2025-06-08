@@ -1,11 +1,10 @@
-# core/data/models.py
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 from enum import Enum
 
 
-class SeverityLevel(Enum):
+class SeverityLevel(str, Enum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
@@ -30,6 +29,17 @@ class GPSPoint(BaseModel):
         if not -180 <= v <= 180:
             raise ValueError('Longitude must be between -180 and 180 degrees')
         return v
+
+    def dict(self) -> Dict[str, Any]:
+        """Convert to dictionary - overriding to handle datetime serialization"""
+        return {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "altitude": self.altitude,
+            "speed": self.speed,
+            "timestamp": self.timestamp.isoformat() if isinstance(self.timestamp, datetime) else self.timestamp,
+            "accuracy": self.accuracy
+        }
 
     class Config:
         json_encoders = {
