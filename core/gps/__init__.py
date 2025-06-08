@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
-from ..data.models import GPSPoint
+# core/gps/__init__.py
+"""
+GPS module for location tracking and simulation.
+"""
+from .simulator import GPSSimulator
+from .serial_receiver import SerialGPSReceiver
 
-class GPSProvider(ABC):
-    @abstractmethod
-    def get_current_location(self) -> GPSPoint:
-        pass
+__all__ = ['GPSSimulator', 'SerialGPSReceiver']

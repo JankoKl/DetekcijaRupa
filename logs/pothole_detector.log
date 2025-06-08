@@ -185,3 +185,72 @@
 2025-06-06 11:39:53,816 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
 2025-06-06 11:40:01,179 - core.detection.processor - INFO - Video processing stopped
 2025-06-06 11:40:01,180 - config.logging - INFO - Application shutdown
+2025-06-08 16:08:47 - root - [32mINFO[0m - setup_logging:68 - Logging system initialized
+2025-06-08 16:08:47 - __main__ - [32mINFO[0m - run:62 - Running in live mode
+2025-06-08 16:08:47 - core.data.repository - [31mERROR[0m - _initialize_database:38 - Failed to initialize database: no such column: created_at
+2025-06-08 16:08:47 - core.services.pothole_service - [31mERROR[0m - _initialize_components:55 - Failed to initialize components: no such column: created_at
+2025-06-08 16:12:03 - root - [32mINFO[0m - setup_logging:68 - Logging system initialized
+2025-06-08 16:12:03 - __main__ - [32mINFO[0m - run:62 - Running in live mode
+2025-06-08 16:12:03 - core.data.repository - [32mINFO[0m - _initialize_database:36 - Database initialized successfully
+2025-06-08 16:12:05 - core.detection.detector - [32mINFO[0m - _load_model:45 - YOLO model loaded from models\best.pt
+2025-06-08 16:12:06 - interfaces.telegram.bot - [32mINFO[0m - _initialize_bot:47 - Telegram bot initialized successfully
+2025-06-08 16:12:06 - core.services.pothole_service - [32mINFO[0m - _initialize_components:52 - All components initialized successfully
+2025-06-08 16:12:06 - core.services.pothole_service - [32mINFO[0m - start:64 - Starting pothole detection service
+2025-06-08 16:12:06 - interfaces.telegram.bot - [32mINFO[0m - start:65 - Telegram bot started
+2025-06-08 16:12:06 - core.gps.simulator - [32mINFO[0m - start:78 - GPS simulator started
+2025-06-08 16:12:06 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 16:12:06 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 16:12:06 - telegram.ext.Application - [32mINFO[0m - start:630 - Application started
+2025-06-08 16:12:17 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:12:27 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:12:37 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:12:47 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:12:52 - __main__ - [32mINFO[0m - _signal_handler:45 - Received signal 2, shutting down gracefully...
+2025-06-08 16:12:52 - core.services.pothole_service - [32mINFO[0m - stop:91 - Stopping pothole detection service
+2025-06-08 16:12:52 - telegram.ext.Application - [32mINFO[0m - stop:664 - Application is stopping. This might take a moment.
+2025-06-08 16:12:57 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:15 - root - [32mINFO[0m - setup_logging:68 - Logging system initialized
+2025-06-08 16:14:15 - __main__ - [32mINFO[0m - run:62 - Running in live mode
+2025-06-08 16:14:15 - core.data.repository - [32mINFO[0m - _initialize_database:36 - Database initialized successfully
+2025-06-08 16:14:16 - core.detection.detector - [32mINFO[0m - _load_model:45 - YOLO model loaded from models\best.pt
+2025-06-08 16:14:18 - interfaces.telegram.bot - [32mINFO[0m - _initialize_bot:47 - Telegram bot initialized successfully
+2025-06-08 16:14:18 - core.services.pothole_service - [32mINFO[0m - _initialize_components:52 - All components initialized successfully
+2025-06-08 16:14:18 - core.services.pothole_service - [32mINFO[0m - start:64 - Starting pothole detection service
+2025-06-08 16:14:18 - interfaces.telegram.bot - [32mINFO[0m - start:65 - Telegram bot started
+2025-06-08 16:14:18 - core.gps.simulator - [32mINFO[0m - start:78 - GPS simulator started
+2025-06-08 16:14:18 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-08 16:14:18 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-08 16:14:18 - telegram.ext.Application - [32mINFO[0m - start:630 - Application started
+2025-06-08 16:14:28 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:38 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:43 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:44 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 16:14:48 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:48 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 16:14:51 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:51 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 16:14:54 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:14:54 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-08 16:15:04 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:15:06 - __main__ - [32mINFO[0m - _signal_handler:45 - Received signal 2, shutting down gracefully...
+2025-06-08 16:15:06 - core.services.pothole_service - [32mINFO[0m - stop:91 - Stopping pothole detection service
+2025-06-08 16:15:06 - telegram.ext.Application - [32mINFO[0m - stop:664 - Application is stopping. This might take a moment.
+2025-06-08 16:15:14 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:15:24 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:15:35 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:15:45 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:15:55 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:16:05 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:16:15 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:16:25 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:16:35 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:16:45 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:16:55 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:17:05 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:17:15 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:17:25 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:17:35 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:17:45 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:17:55 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:18:05 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-08 16:18:15 - httpx - [32mINFO[0m - _send_single_request:1740 - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"

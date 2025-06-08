@@ -1,4 +1,3 @@
-# core/data/models.py
 """
 Data models for the pothole detection system.
 """
@@ -17,8 +16,48 @@ class SeverityLevel(Enum):
 
 
 @dataclass
+class GPSPoint:
+    """GPS point data model."""
+    latitude: float
+    longitude: float
+    altitude: Optional[float] = None
+    accuracy: Optional[float] = None
+    timestamp: datetime = field(default_factory=datetime.now)
+    address: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'altitude': self.altitude,
+            'accuracy': self.accuracy,
+            'timestamp': self.timestamp.isoformat(),
+            'address': self.address
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'GPSPoint':
+        """Create from dictionary."""
+        timestamp = data.get('timestamp')
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp)
+        elif timestamp is None:
+            timestamp = datetime.now()
+
+        return cls(
+            latitude=data['latitude'],
+            longitude=data['longitude'],
+            altitude=data.get('altitude'),
+            accuracy=data.get('accuracy'),
+            timestamp=timestamp,
+            address=data.get('address')
+        )
+
+
+@dataclass
 class GPSLocation:
-    """GPS location data model."""
+    """GPS location data model (alias for GPSPoint for backward compatibility)."""
     latitude: float
     longitude: float
     altitude: Optional[float] = None
