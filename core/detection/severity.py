@@ -1,4 +1,3 @@
-# core/detection/severity.py
 """
 Pothole severity analysis module.
 """
