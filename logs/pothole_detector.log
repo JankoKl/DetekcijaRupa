@@ -1,0 +1,187 @@
+2025-06-05 20:08:00,537 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 20:10:17,567 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 20:15:42,598 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 23:43:51,334 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 23:45:38,046 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 23:46:36,366 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 23:46:36,601 - core.detection.detector - INFO - Loaded YOLO model from models/best.pt
+2025-06-05 23:48:00,332 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 23:48:00,453 - core.detection.detector - INFO - Loaded YOLO model from models/best.pt
+2025-06-05 23:48:00,484 - core.data.repository - INFO - Database initialized
+2025-06-05 23:48:00,492 - config.logging - INFO - Using GPS simulator
+2025-06-05 23:48:00,635 - config.logging - INFO - Starting video processing from p.mp4
+2025-06-05 23:48:05,813 - core.services.pothole_service - INFO - Detected pothole at (44.796448, 20.450636) in Belgrade, Central Serbia
+2025-06-05 23:48:06,763 - core.services.pothole_service - INFO - Detected pothole at (44.795997, 20.45232) in Belgrade, Central Serbia
+2025-06-05 23:48:07,787 - core.services.pothole_service - INFO - Detected pothole at (44.79526, 20.4539) in Belgrade, Central Serbia
+2025-06-05 23:48:08,746 - core.services.pothole_service - INFO - Detected pothole at (44.79426, 20.455328) in Belgrade, Central Serbia
+2025-06-05 23:48:09,754 - core.services.pothole_service - INFO - Detected pothole at (44.793028, 20.45656) in Belgrade, Central Serbia
+2025-06-05 23:48:10,782 - core.services.pothole_service - INFO - Detected pothole at (44.7916, 20.45756) in Belgrade, Central Serbia
+2025-06-05 23:48:11,934 - core.services.pothole_service - INFO - Detected pothole at (44.79002, 20.458297) in Belgrade, Central Serbia
+2025-06-05 23:48:12,889 - core.services.pothole_service - INFO - Detected pothole at (44.788336, 20.458748) in Belgrade, Central Serbia
+2025-06-05 23:48:13,887 - core.services.pothole_service - INFO - Detected pothole at (44.7866, 20.4589) in Belgrade, Central Serbia
+2025-06-05 23:48:14,941 - core.services.pothole_service - INFO - Detected pothole at (44.784864, 20.458748) in Belgrade, Central Serbia
+2025-06-05 23:48:15,894 - core.services.pothole_service - INFO - Detected pothole at (44.78318, 20.458297) in Belgrade, Central Serbia
+2025-06-05 23:48:16,880 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.45756) in Belgrade, Central Serbia
+2025-06-05 23:48:17,896 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.45656) in Belgrade, Central Serbia
+2025-06-05 23:48:18,877 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.455328) in Belgrade, Central Serbia
+2025-06-05 23:48:19,877 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4539) in Belgrade, Central Serbia
+2025-06-05 23:48:20,881 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.45232) in Belgrade, Central Serbia
+2025-06-05 23:48:21,867 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.450636) in Belgrade, Central Serbia
+2025-06-05 23:48:22,908 - core.services.pothole_service - INFO - Detected pothole at (44.7766, 20.4489) in Belgrade, Central Serbia
+2025-06-05 23:48:23,872 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.447164) in Belgrade, Central Serbia
+2025-06-05 23:48:24,877 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.44548) in Belgrade, Central Serbia
+2025-06-05 23:48:25,868 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4439) in Belgrade, Central Serbia
+2025-06-05 23:48:26,915 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.442472) in Belgrade, Central Serbia
+2025-06-05 23:48:27,192 - core.detection.processor - INFO - Processing interrupted by user
+2025-06-05 23:48:27,208 - core.detection.processor - INFO - Video processing stopped
+2025-06-05 23:52:53,403 - config.logging - INFO - Starting Pothole Detection System
+2025-06-05 23:52:53,666 - core.detection.detector - INFO - Loaded YOLO model from models/best.pt
+2025-06-05 23:52:53,668 - core.data.repository - INFO - Database initialized
+2025-06-05 23:52:53,668 - config.logging - INFO - Using GPS simulator
+2025-06-05 23:52:53,779 - config.logging - INFO - Starting video processing from p.mp4
+2025-06-05 23:53:01,023 - core.services.pothole_service - INFO - Detected pothole at (44.796448, 20.450636) in Belgrade, Central Serbia
+2025-06-05 23:53:02,017 - core.services.pothole_service - INFO - Detected pothole at (44.795997, 20.45232) in Belgrade, Central Serbia
+2025-06-05 23:53:03,084 - core.services.pothole_service - INFO - Detected pothole at (44.79526, 20.4539) in Belgrade, Central Serbia
+2025-06-05 23:53:04,107 - core.services.pothole_service - INFO - Detected pothole at (44.79426, 20.455328) in Belgrade, Central Serbia
+2025-06-05 23:53:05,147 - core.services.pothole_service - INFO - Detected pothole at (44.793028, 20.45656) in Belgrade, Central Serbia
+2025-06-05 23:53:06,188 - core.services.pothole_service - INFO - Detected pothole at (44.7916, 20.45756) in Belgrade, Central Serbia
+2025-06-05 23:53:08,154 - core.services.pothole_service - INFO - Detected pothole at (44.79002, 20.458297) in Belgrade, Central Serbia
+2025-06-05 23:53:09,471 - core.services.pothole_service - INFO - Detected pothole at (44.788336, 20.458748) in Belgrade, Central Serbia
+2025-06-05 23:53:10,481 - core.services.pothole_service - INFO - Detected pothole at (44.7866, 20.4589) in Belgrade, Central Serbia
+2025-06-05 23:53:11,504 - core.services.pothole_service - INFO - Detected pothole at (44.784864, 20.458748) in Belgrade, Central Serbia
+2025-06-05 23:53:12,489 - core.services.pothole_service - INFO - Detected pothole at (44.78318, 20.458297) in Belgrade, Central Serbia
+2025-06-05 23:53:13,477 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.45756) in Belgrade, Central Serbia
+2025-06-05 23:53:14,624 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.45656) in Belgrade, Central Serbia
+2025-06-05 23:53:15,550 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.455328) in Belgrade, Central Serbia
+2025-06-05 23:53:16,480 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4539) in Belgrade, Central Serbia
+2025-06-05 23:53:17,481 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.45232) in Belgrade, Central Serbia
+2025-06-05 23:53:18,474 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.450636) in Belgrade, Central Serbia
+2025-06-05 23:53:19,495 - core.services.pothole_service - INFO - Detected pothole at (44.7766, 20.4489) in Belgrade, Central Serbia
+2025-06-05 23:53:20,506 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.447164) in Belgrade, Central Serbia
+2025-06-05 23:53:21,485 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.44548) in Belgrade, Central Serbia
+2025-06-05 23:53:22,616 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4439) in Belgrade, Central Serbia
+2025-06-05 23:53:23,638 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.442472) in Belgrade, Central Serbia
+2025-06-05 23:53:24,608 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.44124) in Belgrade, Central Serbia
+2025-06-05 23:53:25,489 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.44024) in Belgrade, Central Serbia
+2025-06-05 23:53:25,811 - core.detection.processor - INFO - Processing interrupted by user
+2025-06-05 23:53:25,827 - core.detection.processor - INFO - Video processing stopped
+2025-06-06 11:30:34,633 - config.logging - INFO - Starting Pothole Detection System
+2025-06-06 11:30:34,843 - core.detection.detector - INFO - Loaded YOLO model from models/best.pt
+2025-06-06 11:30:34,855 - core.data.repository - INFO - Database initialized
+2025-06-06 11:30:34,855 - config.logging - INFO - Using GPS simulator
+2025-06-06 11:30:36,092 - interfaces.telegram.bot - INFO - Telegram bot configured
+2025-06-06 11:30:36,093 - config.logging - INFO - Telegram bot started
+2025-06-06 11:30:36,195 - config.logging - INFO - Starting video processing from p.mp4
+2025-06-06 11:30:42,629 - core.services.pothole_service - INFO - Detected pothole at (44.796448, 20.450636) in Belgrade, Central Serbia
+2025-06-06 11:30:44,226 - core.services.pothole_service - INFO - Detected pothole at (44.795997, 20.45232) in Belgrade, Central Serbia
+2025-06-06 11:30:45,030 - core.services.pothole_service - INFO - Detected pothole at (44.79526, 20.4539) in Belgrade, Central Serbia
+2025-06-06 11:30:46,541 - core.services.pothole_service - INFO - Detected pothole at (44.79426, 20.455328) in Belgrade, Central Serbia
+2025-06-06 11:30:47,687 - core.services.pothole_service - INFO - Detected pothole at (44.793028, 20.45656) in Belgrade, Central Serbia
+2025-06-06 11:30:48,660 - core.services.pothole_service - INFO - Detected pothole at (44.7916, 20.45756) in Belgrade, Central Serbia
+2025-06-06 11:30:49,542 - core.services.pothole_service - INFO - Detected pothole at (44.79002, 20.458297) in Belgrade, Central Serbia
+2025-06-06 11:30:50,444 - core.services.pothole_service - INFO - Detected pothole at (44.788336, 20.458748) in Belgrade, Central Serbia
+2025-06-06 11:30:51,360 - core.services.pothole_service - INFO - Detected pothole at (44.7866, 20.4589) in Belgrade, Central Serbia
+2025-06-06 11:30:53,715 - core.services.pothole_service - INFO - Detected pothole at (44.784864, 20.458748) in Belgrade, Central Serbia
+2025-06-06 11:30:54,706 - core.services.pothole_service - INFO - Detected pothole at (44.78318, 20.458297) in Belgrade, Central Serbia
+2025-06-06 11:30:58,539 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.45756) in Belgrade, Central Serbia
+2025-06-06 11:30:59,552 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.45656) in Belgrade, Central Serbia
+2025-06-06 11:31:01,167 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.455328) in Belgrade, Central Serbia
+2025-06-06 11:31:02,170 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4539) in Belgrade, Central Serbia
+2025-06-06 11:31:03,276 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.45232) in Belgrade, Central Serbia
+2025-06-06 11:31:04,104 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.450636) in Belgrade, Central Serbia
+2025-06-06 11:31:05,414 - core.services.pothole_service - INFO - Detected pothole at (44.7766, 20.4489) in Belgrade, Central Serbia
+2025-06-06 11:31:08,335 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.447164) in Belgrade, Central Serbia
+2025-06-06 11:31:09,079 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.44548) in Belgrade, Central Serbia
+2025-06-06 11:31:10,145 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4439) in Belgrade, Central Serbia
+2025-06-06 11:31:11,257 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.442472) in Belgrade, Central Serbia
+2025-06-06 11:31:12,198 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.44124) in Belgrade, Central Serbia
+2025-06-06 11:31:13,117 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.44024) in Belgrade, Central Serbia
+2025-06-06 11:31:14,138 - core.services.pothole_service - INFO - Detected pothole at (44.78318, 20.439503) in Belgrade, Central Serbia
+2025-06-06 11:31:15,380 - core.services.pothole_service - INFO - Detected pothole at (44.784864, 20.439052) in Belgrade, Central Serbia
+2025-06-06 11:31:16,441 - core.services.pothole_service - INFO - Detected pothole at (44.7866, 20.4389) in Belgrade, Central Serbia
+2025-06-06 11:31:17,614 - core.services.pothole_service - INFO - Detected pothole at (44.788336, 20.439052) in Belgrade, Central Serbia
+2025-06-06 11:31:18,617 - core.services.pothole_service - INFO - Detected pothole at (44.79002, 20.439503) in Belgrade, Central Serbia
+2025-06-06 11:31:19,482 - core.services.pothole_service - INFO - Detected pothole at (44.7916, 20.44024) in Belgrade, Central Serbia
+2025-06-06 11:31:20,473 - core.services.pothole_service - INFO - Detected pothole at (44.793028, 20.44124) in Belgrade, Central Serbia
+2025-06-06 11:31:21,405 - core.services.pothole_service - INFO - Detected pothole at (44.79426, 20.442472) in Belgrade, Central Serbia
+2025-06-06 11:31:22,356 - core.services.pothole_service - INFO - Detected pothole at (44.79526, 20.4439) in Belgrade, Central Serbia
+2025-06-06 11:31:23,386 - core.services.pothole_service - INFO - Detected pothole at (44.795997, 20.44548) in Belgrade, Central Serbia
+2025-06-06 11:31:24,417 - core.services.pothole_service - INFO - Detected pothole at (44.796448, 20.447164) in Belgrade, Central Serbia
+2025-06-06 11:31:25,890 - core.services.pothole_service - INFO - Detected pothole at (44.7966, 20.4489) in Belgrade, Central Serbia
+2025-06-06 11:31:47,139 - core.detection.processor - INFO - Processing interrupted by user
+2025-06-06 11:31:47,151 - core.detection.processor - INFO - Video processing stopped
+2025-06-06 11:37:13,534 - config.logging - INFO - Starting Pothole Detection System
+2025-06-06 11:37:13,665 - core.detection.detector - INFO - Loaded YOLO model from models/best.pt
+2025-06-06 11:37:13,667 - core.data.repository - INFO - Database initialized
+2025-06-06 11:37:13,667 - config.logging - INFO - Using GPS simulator
+2025-06-06 11:37:13,704 - config.logging - INFO - Telegram bot thread started
+2025-06-06 11:37:13,737 - config.logging - INFO - Starting video processing from p.mp4
+2025-06-06 11:37:15,613 - interfaces.telegram.bot - INFO - Telegram bot starting...
+2025-06-06 11:37:15,837 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getMe "HTTP/1.1 200 OK"
+2025-06-06 11:37:15,838 - telegram.ext.Application - INFO - Application started
+2025-06-06 11:37:15,887 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/deleteWebhook "HTTP/1.1 200 OK"
+2025-06-06 11:37:15,888 - interfaces.telegram.bot - INFO - Bot is now running
+2025-06-06 11:37:18,194 - core.services.pothole_service - INFO - Detected pothole at (44.796448, 20.450636) in Belgrade, Central Serbia
+2025-06-06 11:37:19,139 - core.services.pothole_service - INFO - Detected pothole at (44.795997, 20.45232) in Belgrade, Central Serbia
+2025-06-06 11:37:21,048 - core.services.pothole_service - INFO - Detected pothole at (44.79526, 20.4539) in Belgrade, Central Serbia
+2025-06-06 11:37:21,686 - core.services.pothole_service - INFO - Detected pothole at (44.79426, 20.455328) in Belgrade, Central Serbia
+2025-06-06 11:37:22,728 - core.services.pothole_service - INFO - Detected pothole at (44.793028, 20.45656) in Belgrade, Central Serbia
+2025-06-06 11:37:25,153 - core.services.pothole_service - INFO - Detected pothole at (44.7916, 20.45756) in Belgrade, Central Serbia
+2025-06-06 11:37:25,834 - core.services.pothole_service - INFO - Detected pothole at (44.79002, 20.458297) in Belgrade, Central Serbia
+2025-06-06 11:37:26,031 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:37:26,810 - core.services.pothole_service - INFO - Detected pothole at (44.788336, 20.458748) in Belgrade, Central Serbia
+2025-06-06 11:37:27,810 - core.services.pothole_service - INFO - Detected pothole at (44.7866, 20.4589) in Belgrade, Central Serbia
+2025-06-06 11:37:28,888 - core.services.pothole_service - INFO - Detected pothole at (44.784864, 20.458748) in Belgrade, Central Serbia
+2025-06-06 11:37:29,817 - core.services.pothole_service - INFO - Detected pothole at (44.78318, 20.458297) in Belgrade, Central Serbia
+2025-06-06 11:37:30,888 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.45756) in Belgrade, Central Serbia
+2025-06-06 11:37:31,902 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.45656) in Belgrade, Central Serbia
+2025-06-06 11:37:32,860 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.455328) in Belgrade, Central Serbia
+2025-06-06 11:37:33,813 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4539) in Belgrade, Central Serbia
+2025-06-06 11:37:34,790 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.45232) in Belgrade, Central Serbia
+2025-06-06 11:37:35,806 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.450636) in Belgrade, Central Serbia
+2025-06-06 11:37:36,077 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:37:36,793 - core.services.pothole_service - INFO - Detected pothole at (44.7766, 20.4489) in Belgrade, Central Serbia
+2025-06-06 11:37:37,832 - core.services.pothole_service - INFO - Detected pothole at (44.776752, 20.447164) in Belgrade, Central Serbia
+2025-06-06 11:37:38,782 - core.services.pothole_service - INFO - Detected pothole at (44.777203, 20.44548) in Belgrade, Central Serbia
+2025-06-06 11:37:39,793 - core.services.pothole_service - INFO - Detected pothole at (44.77794, 20.4439) in Belgrade, Central Serbia
+2025-06-06 11:37:41,035 - core.services.pothole_service - INFO - Detected pothole at (44.77894, 20.442472) in Belgrade, Central Serbia
+2025-06-06 11:37:41,884 - core.services.pothole_service - INFO - Detected pothole at (44.780172, 20.44124) in Belgrade, Central Serbia
+2025-06-06 11:37:42,818 - core.services.pothole_service - INFO - Detected pothole at (44.7816, 20.44024) in Belgrade, Central Serbia
+2025-06-06 11:37:43,836 - core.services.pothole_service - INFO - Detected pothole at (44.78318, 20.439503) in Belgrade, Central Serbia
+2025-06-06 11:37:44,817 - core.services.pothole_service - INFO - Detected pothole at (44.784864, 20.439052) in Belgrade, Central Serbia
+2025-06-06 11:37:45,739 - core.services.pothole_service - INFO - Detected pothole at (44.7866, 20.4389) in Belgrade, Central Serbia
+2025-06-06 11:37:46,146 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:37:46,790 - core.services.pothole_service - INFO - Detected pothole at (44.788336, 20.439052) in Belgrade, Central Serbia
+2025-06-06 11:37:47,785 - core.services.pothole_service - INFO - Detected pothole at (44.79002, 20.439503) in Belgrade, Central Serbia
+2025-06-06 11:37:48,868 - core.services.pothole_service - INFO - Detected pothole at (44.7916, 20.44024) in Belgrade, Central Serbia
+2025-06-06 11:37:49,043 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:37:49,212 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-06 11:37:49,946 - core.services.pothole_service - INFO - Detected pothole at (44.793028, 20.44124) in Belgrade, Central Serbia
+2025-06-06 11:37:50,802 - core.services.pothole_service - INFO - Detected pothole at (44.79426, 20.442472) in Belgrade, Central Serbia
+2025-06-06 11:37:52,325 - core.services.pothole_service - INFO - Detected pothole at (44.79526, 20.4439) in Belgrade, Central Serbia
+2025-06-06 11:37:53,379 - core.services.pothole_service - INFO - Detected pothole at (44.795997, 20.44548) in Belgrade, Central Serbia
+2025-06-06 11:37:54,383 - core.services.pothole_service - INFO - Detected pothole at (44.796448, 20.447164) in Belgrade, Central Serbia
+2025-06-06 11:37:55,362 - core.services.pothole_service - INFO - Detected pothole at (44.7966, 20.4489) in Belgrade, Central Serbia
+2025-06-06 11:37:59,094 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:03,651 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:03,669 - core.data.repository - INFO - Database initialized
+2025-06-06 11:38:05,108 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendDocument "HTTP/1.1 200 OK"
+2025-06-06 11:38:14,858 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:24,911 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:34,962 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:40,665 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:40,668 - core.data.repository - INFO - Database initialized
+2025-06-06 11:38:40,868 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/sendMessage "HTTP/1.1 200 OK"
+2025-06-06 11:38:43,388 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:38:43,516 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/answerCallbackQuery "HTTP/1.1 200 OK"
+2025-06-06 11:38:43,532 - core.data.repository - INFO - Database initialized
+2025-06-06 11:38:43,624 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/editMessageText "HTTP/1.1 200 OK"
+2025-06-06 11:38:53,477 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:39:03,544 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:39:13,594 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:39:23,653 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:39:33,706 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:39:43,764 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:39:53,816 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7040394124:AAE8ce2g_4KCoT-2xdrqTi6sJbvrH5v5SlM/getUpdates "HTTP/1.1 200 OK"
+2025-06-06 11:40:01,179 - core.detection.processor - INFO - Video processing stopped
+2025-06-06 11:40:01,180 - config.logging - INFO - Application shutdown
