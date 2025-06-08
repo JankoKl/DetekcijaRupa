@@ -1,101 +1,168 @@
-from pydantic import BaseModel, Field, validator
+# core/data/models.py
+"""
+Data models for the pothole detection system.
+"""
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from enum import Enum
 
 
-class SeverityLevel(str, Enum):
-    LOW = "Low"
-    MEDIUM = "Medium"
-    HIGH = "High"
+class SeverityLevel(Enum):
+    """Pothole severity levels."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
 
 
-class GPSPoint(BaseModel):
-    latitude: float = Field(..., ge=-90, le=90, description="Latitude in decimal degrees")
-    longitude: float = Field(..., ge=-180, le=180, description="Longitude in decimal degrees")
-    altitude: Optional[float] = Field(None, description="Altitude in meters")
-    speed: Optional[float] = Field(None, ge=0, description="Speed in km/h")
-    timestamp: datetime = Field(default_factory=datetime.now)
-    accuracy: Optional[float] = Field(None, ge=0, description="GPS accuracy in meters")
+@dataclass
+class GPSLocation:
+    """GPS location data model."""
+    latitude: float
+    longitude: float
+    altitude: Optional[float] = None
+    accuracy: Optional[float] = None
+    timestamp: datetime = field(default_factory=datetime.now)
+    address: Optional[str] = None
 
-    @validator('latitude')
-    def validate_latitude(cls, v):
-        if not -90 <= v <= 90:
-            raise ValueError('Latitude must be between -90 and 90 degrees')
-        return v
-
-    @validator('longitude')
-    def validate_longitude(cls, v):
-        if not -180 <= v <= 180:
-            raise ValueError('Longitude must be between -180 and 180 degrees')
-        return v
-
-    def dict(self) -> Dict[str, Any]:
-        """Convert to dictionary - overriding to handle datetime serialization"""
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
         return {
-            "latitude": self.latitude,
-            "longitude": self.longitude,
-            "altitude": self.altitude,
-            "speed": self.speed,
-            "timestamp": self.timestamp.isoformat() if isinstance(self.timestamp, datetime) else self.timestamp,
-            "accuracy": self.accuracy
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'altitude': self.altitude,
+            'accuracy': self.accuracy,
+            'timestamp': self.timestamp.isoformat(),
+            'address': self.address
         }
 
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'GPSLocation':
+        """Create from dictionary."""
+        timestamp = data.get('timestamp')
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp)
+        elif timestamp is None:
+            timestamp = datetime.now()
+
+        return cls(
+            latitude=data['latitude'],
+            longitude=data['longitude'],
+            altitude=data.get('altitude'),
+            accuracy=data.get('accuracy'),
+            timestamp=timestamp,
+            address=data.get('address')
+        )
+
+
+@dataclass
+class Detection:
+    """Pothole detection data model."""
+    bbox: List[int]  # [x1, y1, x2, y2]
+    confidence: float
+    area: float
+    width: float
+    height: float
+    severity_level: str
+    severity_score: float
+    timestamp: datetime = field(default_factory=datetime.now)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'bbox': self.bbox,
+            'confidence': self.confidence,
+            'area': self.area,
+            'width': self.width,
+            'height': self.height,
+            'severity_level': self.severity_level,
+            'severity_score': self.severity_score,
+            'timestamp': self.timestamp.isoformat()
         }
 
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Detection':
+        """Create from dictionary."""
+        timestamp = data.get('timestamp')
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp)
+        elif timestamp is None:
+            timestamp = datetime.now()
 
-class Detection(BaseModel):
-    bbox: list[float] = Field(..., description="Bounding box coordinates [x1, y1, x2, y2]")
-    contour: Optional[list] = Field(None, description="Contour points")
-    severity: SeverityLevel
-    severity_score: float = Field(..., ge=0, le=100)
-    confidence: float = Field(..., ge=0, le=1)
-    area_pixels: Optional[int] = Field(None, ge=0)
-    diameter_cm: Optional[float] = Field(None, ge=0)
+        return cls(
+            bbox=data['bbox'],
+            confidence=data['confidence'],
+            area=data['area'],
+            width=data['width'],
+            height=data['height'],
+            severity_level=data['severity_level'],
+            severity_score=data['severity_score'],
+            timestamp=timestamp
+        )
 
 
-class Pothole(BaseModel):
+@dataclass
+class Pothole:
+    """Main pothole data model."""
     id: Optional[int] = None
-    location: GPSPoint
-    street: str = Field(default="Unknown Street")
-    city: str = Field(default="Unknown City")
-    region: str = Field(default="Unknown Region")
-    country: str = Field(default="Unknown Country")
-    severity_level: SeverityLevel
-    severity_score: float = Field(..., ge=0, le=100)
-    confidence: float = Field(..., ge=0, le=1)
-    detected_at: datetime = Field(default_factory=datetime.now)
+    detection: Optional[Detection] = None
+    gps_location: Optional[GPSLocation] = None
     image_path: Optional[str] = None
-    processed: bool = Field(default=False)
-    verified: bool = Field(default=False)
+    image_data: Optional[str] = None  # Base64 encoded thumbnail
+    processed: bool = False
+    notification_sent: bool = False
+    notes: Optional[str] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
 
-    @validator('severity_score')
-    def validate_severity_score(cls, v):
-        if not 0 <= v <= 100:
-            raise ValueError('Severity score must be between 0 and 100')
-        return v
-
-    @validator('confidence')
-    def validate_confidence(cls, v):
-        if not 0 <= v <= 1:
-            raise ValueError('Confidence must be between 0 and 1')
-        return v
-
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            SeverityLevel: lambda v: v.value
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'id': self.id,
+            'detection': self.detection.to_dict() if self.detection else None,
+            'gps_location': self.gps_location.to_dict() if self.gps_location else None,
+            'image_path': self.image_path,
+            'image_data': self.image_data,
+            'processed': self.processed,
+            'notification_sent': self.notification_sent,
+            'notes': self.notes,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
         }
 
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Pothole':
+        """Create from dictionary."""
+        created_at = data.get('created_at')
+        if isinstance(created_at, str):
+            created_at = datetime.fromisoformat(created_at)
+        elif created_at is None:
+            created_at = datetime.now()
 
-class PotholeStats(BaseModel):
-    total_detected: int = 0
-    low_severity: int = 0
-    medium_severity: int = 0
-    high_severity: int = 0
-    average_confidence: float = 0.0
-    detection_rate_per_hour: float = 0.0
-    last_detection: Optional[datetime] = None
+        updated_at = data.get('updated_at')
+        if isinstance(updated_at, str):
+            updated_at = datetime.fromisoformat(updated_at)
+        elif updated_at is None:
+            updated_at = datetime.now()
+
+        detection = None
+        if data.get('detection'):
+            detection = Detection.from_dict(data['detection'])
+
+        gps_location = None
+        if data.get('gps_location'):
+            gps_location = GPSLocation.from_dict(data['gps_location'])
+
+        return cls(
+            id=data.get('id'),
+            detection=detection,
+            gps_location=gps_location,
+            image_path=data.get('image_path'),
+            image_data=data.get('image_data'),
+            processed=data.get('processed', False),
+            notification_sent=data.get('notification_sent', False),
+            notes=data.get('notes'),
+            created_at=created_at,
+            updated_at=updated_at
+        )

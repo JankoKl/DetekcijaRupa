@@ -1,177 +1,163 @@
+# core/services/pothole_service.py
+"""
+Main pothole detection service that orchestrates all components.
+"""
 import logging
-import json
-import os
+import threading
 import time
-import datetime
-from concurrent.futures import ThreadPoolExecutor
-from typing import List, Optional, Tuple, Any
-from geopy.geocoders import Nominatim
-from geopy.distance import geodesic
-from geopy.exc import GeocoderUnavailable
-from core.data.models import Pothole, GPSPoint, SeverityLevel
-from core.data.repository import PotholeRepository
-from core.gps import GPSProvider
+from typing import Optional, Dict, Any
+from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from config.config import Config
+from config.logging import get_logger
+from core.capture.frame_capture import FrameCapture
+from core.detection.detector import PotholeDetector
+from core.gps.simulator import GPSSimulator
+from core.data.repository import PotholeRepository
+from interfaces.telegram.bot import TelegramBot
 
 
 class PotholeService:
-    def __init__(self, detector, gps_provider: 'GPSProvider', repository: PotholeRepository):
-        self.detector = detector
-        self.gps_provider = gps_provider
-        self.repository = repository
-        self.geolocator = Nominatim(user_agent="pothole_detector")
+    """Main service class that coordinates all pothole detection components."""
 
-        # Spatiotemporal deduplication
-        self.recent_potholes = []
-        self.duplicate_threshold = 15  # meters
-        self.time_window = 300  # 5 minutes
+    def __init__(self, config: Config):
+        self.config = config
+        self.logger = get_logger(__name__)
+        self.running = False
+        self._stop_event = threading.Event()
 
-        # Asynchronous geocoding
-        self.geocoding_executor = ThreadPoolExecutor(max_workers=2)
-        self.geocoding_cache = {}
-        self.cache_file = "geocoding_cache.json"
-        self._load_cache()
+        # Initialize components
+        self._initialize_components()
 
-    def _load_cache(self):
-        """Load geocoding cache from file"""
-        if os.path.exists(self.cache_file):
+    def _initialize_components(self):
+        """Initialize all service components."""
+        try:
+            # Initialize repository
+            self.repository = PotholeRepository(self.config.database)
+
+            # Initialize detector
+            self.detector = PotholeDetector(self.config.model)
+
+            # Initialize GPS simulator
+            self.gps_simulator = GPSSimulator(self.config.gps)
+
+            # Initialize frame capture
+            self.frame_capture = FrameCapture(self.config.video)
+
+            # Initialize Telegram bot if enabled
+            self.telegram_bot = None
+            if self.config.telegram.enabled and self.config.telegram.token:
+                self.telegram_bot = TelegramBot(self.config.telegram)
+
+            self.logger.info("All components initialized successfully")
+
+        except Exception as e:
+            self.logger.error(f"Failed to initialize components: {e}")
+            raise
+
+    def start(self):
+        """Start the pothole detection service."""
+        if self.running:
+            self.logger.warning("Service is already running")
+            return
+
+        self.logger.info("Starting pothole detection service")
+        self.running = True
+        self._stop_event.clear()
+
+        try:
+            # Start Telegram bot if enabled
+            if self.telegram_bot:
+                self.telegram_bot.start()
+
+            # Start GPS simulator
+            self.gps_simulator.start()
+
+            # Main detection loop
+            self._detection_loop()
+
+        except KeyboardInterrupt:
+            self.logger.info("Service interrupted by user")
+        except Exception as e:
+            self.logger.error(f"Service error: {e}", exc_info=True)
+        finally:
+            self.stop()
+
+    def stop(self):
+        """Stop the pothole detection service."""
+        if not self.running:
+            return
+
+        self.logger.info("Stopping pothole detection service")
+        self.running = False
+        self._stop_event.set()
+
+        # Stop components
+        if self.telegram_bot:
+            self.telegram_bot.stop()
+
+        if hasattr(self, 'gps_simulator'):
+            self.gps_simulator.stop()
+
+        if hasattr(self, 'frame_capture'):
+            self.frame_capture.stop()
+
+        self.logger.info("Service stopped")
+
+    def _detection_loop(self):
+        """Main detection loop."""
+        frame_count = 0
+
+        while self.running and not self._stop_event.is_set():
             try:
-                with open(self.cache_file, 'r') as f:
-                    self.geocoding_cache = json.load(f)
-                logger.info(f"Loaded geocoding cache with {len(self.geocoding_cache)} entries")
+                # Capture frame
+                frame = self.frame_capture.get_frame()
+                if frame is None:
+                    time.sleep(0.1)
+                    continue
+
+                # Skip frames based on configuration
+                frame_count += 1
+                if frame_count % self.config.video.frame_skip != 0:
+                    continue
+
+                # Get current GPS position
+                gps_position = self.gps_simulator.get_current_position()
+
+                # Detect potholes
+                detections = self.detector.detect(frame)
+
+                # Process detections
+                if detections:
+                    self._process_detections(detections, gps_position, frame)
+
+                # Small delay to prevent excessive CPU usage
+                time.sleep(0.01)
+
             except Exception as e:
-                logger.error(f"Failed to load geocoding cache: {str(e)}")
-                self.geocoding_cache = {}
-        else:
-            self.geocoding_cache = {}
+                self.logger.error(f"Error in detection loop: {e}", exc_info=True)
+                time.sleep(1)  # Wait before retrying
 
-    def _save_cache(self):
-        """Save geocoding cache to file"""
-        try:
-            with open(self.cache_file, 'w') as f:
-                json.dump(self.geocoding_cache, f)
-        except Exception as e:
-            logger.error(f"Failed to save geocoding cache: {str(e)}")
-
-    def _reverse_geocode(self, location: GPSPoint) -> tuple[str, str, str] | tuple[Any, Any, Any] | tuple[Any]:
-        """Perform reverse geocoding with caching"""
-        cache_key = f"{location.latitude:.6f},{location.longitude:.6f}"
-
-        # Return cached result if available
-        if cache_key in self.geocoding_cache:
-            return tuple(self.geocoding_cache[cache_key])
-
-        default_result = ('Unknown Street', 'Unknown City', 'Unknown Region')
-
-        try:
-            location_data = self.geolocator.reverse(
-                (location.latitude, location.longitude),
-                language='en',
-                timeout=5
-            )
-
-            if not location_data or not location_data.raw.get('address'):
-                return default_result
-
-            address = location_data.raw['address']
-            street = address.get('road', 'Unknown Street')
-            city = address.get('city', address.get('town', 'Unknown City'))
-            region = address.get('state', address.get('county', 'Unknown Region'))
-
-            result = (street, city, region)
-            self.geocoding_cache[cache_key] = result
-            self._save_cache()
-            return result
-
-        except GeocoderUnavailable:
-            logger.warning("Geocoding service unavailable")
-            return default_result
-        except Exception as e:
-            logger.error(f"Geocoding error: {str(e)}")
-            return default_result
-
-    def _get_location_info(self, location: GPSPoint) -> Tuple[str, str, str]:
-        """Get location info with async execution"""
-        cache_key = f"{location.latitude:.6f},{location.longitude:.6f}"
-
-        if cache_key in self.geocoding_cache:
-            return tuple(self.geocoding_cache[cache_key])
-
-        # Submit geocoding task asynchronously
-        future = self.geocoding_executor.submit(self._reverse_geocode, location)
-        try:
-            # Wait for result with timeout
-            return future.result(timeout=3)
-        except Exception:
-            return ('Processing...', 'Processing...', 'Processing...')
-
-    def _create_pothole_object(self, detection: dict, location: GPSPoint) -> Pothole:
-        """Create a Pothole object from detection data"""
-        street, city, region = self._get_location_info(location)
-
-        return Pothole(
-            location=location,  # Pass GPSPoint object directly
-            street=street,
-            city=city,
-            region=region,
-            severity_level=detection['severity'],  # Pass enum directly
-            severity_score=detection['score'],
-            confidence=detection['confidence'],
-            detected_at=datetime.datetime.now()
-        )
-
-    def _is_duplicate_location(self, location: GPSPoint) -> bool:
-        """Check if location is near recent detections within time window"""
-        now = datetime.datetime.now()
-        cutoff = now - datetime.timedelta(seconds=self.time_window)
-
-        # Filter recent potholes within time window
-        recent = [p for p in self.recent_potholes if p['timestamp'] > cutoff]
-        self.recent_potholes = recent
-
-        # Check distance to each recent pothole
-        new_point = (location.latitude, location.longitude)
-        for pothole in recent:
-            existing_point = (pothole['location'].latitude, pothole['location'].longitude)
-            if geodesic(new_point, existing_point).meters < self.duplicate_threshold:
-                return True
-        return False
-
-    def process_frame(self, frame) -> Optional[List[dict]]:
-        """Process a frame and save detections"""
-        # Get synchronized GPS location
-        frame_timestamp = time.time()
-        location = self.gps_provider.get_location_at_time(frame_timestamp)
-
-        if not location:
-            logger.warning("No GPS data available")
-            return None
-
-        if self._is_duplicate_location(location):
-            return None
-
-        detections = self.detector.detect(frame)
-        if not detections:
-            return None
-
-        processed_detections = []
-
+    def _process_detections(self, detections: list, gps_position: Dict[str, Any], frame):
+        """Process detected potholes."""
         for detection in detections:
-            pothole = self._create_pothole_object(detection, location)
+            try:
+                # Save to database
+                pothole_id = self.repository.save_pothole(
+                    detection=detection,
+                    gps_position=gps_position,
+                    frame=frame
+                )
 
-            if self.repository.save_pothole(pothole):
-                # Add to recent detections
-                self.recent_potholes.append({
-                    'location': location,
-                    'timestamp': datetime.datetime.now()
-                })
-                loc_key = (round(location.latitude, 6), round(location.longitude, 6))
-                logger.info(f"Detected {detection['severity'].value} pothole at {loc_key}")
-                processed_detections.append(detection)
+                # Send Telegram notification if enabled
+                if self.telegram_bot:
+                    self.telegram_bot.send_pothole_notification(
+                        pothole_id=pothole_id,
+                        detection=detection,
+                        gps_position=gps_position
+                    )
 
-        return processed_detections
+                self.logger.info(f"Processed pothole detection: {pothole_id}")
 
-    def cleanup(self):
-        """Cleanup resources"""
-        self.geocoding_executor.shutdown(wait=True)
+            except Exception as e:
+                self.logger.error(f"Error processing detection: {e}", exc_info=True)
