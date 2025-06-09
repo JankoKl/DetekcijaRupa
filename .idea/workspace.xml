@@ -6,114 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="4df60253-8685-4162-9f15-92309831ef78" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_100_20250608_224403.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_101_20250608_225548.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_102_20250608_225619.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_103_20250608_225733.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_104_20250608_225800.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_105_20250608_225849.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_106_20250609_131355.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_107_20250609_131429.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_10_20250608_214300.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_11_20250608_214301.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_12_20250608_214303.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_13_20250608_214304.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_14_20250608_214305.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_15_20250608_214307.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_16_20250608_214307.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_17_20250608_214308.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_18_20250608_214310.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_19_20250608_214311.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_20_20250608_214313.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_21_20250608_214314.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_22_20250608_214316.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_23_20250608_214317.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_24_20250608_214318.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_25_20250608_214319.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_26_20250608_214321.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_27_20250608_214322.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_28_20250608_214323.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_29_20250608_214324.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_2_20250608_214251.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_30_20250608_214325.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_31_20250608_214326.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_32_20250608_214328.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_33_20250608_214329.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_34_20250608_214330.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_35_20250608_214332.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_36_20250608_214333.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_37_20250608_214334.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_38_20250608_214336.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_39_20250608_214337.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_3_20250608_214252.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_40_20250608_214338.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_41_20250608_214339.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_42_20250608_214341.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_43_20250608_214343.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_44_20250608_214345.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_45_20250608_214346.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_46_20250608_214347.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_47_20250608_214348.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_48_20250608_214352.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_49_20250608_214353.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_4_20250608_214253.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_50_20250608_214354.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_51_20250608_215013.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_52_20250608_215014.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_53_20250608_215015.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_54_20250608_215016.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_55_20250608_215017.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_56_20250608_215018.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_57_20250608_215019.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_58_20250608_215021.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_59_20250608_215022.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_5_20250608_214254.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_60_20250608_215023.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_61_20250608_215024.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_62_20250608_215026.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_63_20250608_215027.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_64_20250608_215028.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_65_20250608_215029.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_66_20250608_215030.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_67_20250608_215031.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_68_20250608_215033.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_69_20250608_215034.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_6_20250608_214255.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_70_20250608_215035.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_71_20250608_215038.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_72_20250608_215040.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_73_20250608_215041.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_74_20250608_215042.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_75_20250608_215043.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_76_20250608_215044.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_77_20250608_215045.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_78_20250608_215046.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_79_20250608_215049.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_7_20250608_214257.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_80_20250608_215050.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_81_20250608_215051.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_82_20250608_215052.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_83_20250608_215053.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_84_20250608_215054.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_85_20250608_215056.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_86_20250608_215057.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_87_20250608_215058.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_88_20250608_215100.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_89_20250608_215101.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_8_20250608_214258.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_90_20250608_215104.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_91_20250608_215105.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_92_20250608_215107.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_93_20250608_215110.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_94_20250608_215111.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_95_20250608_222833.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_96_20250608_222910.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_97_20250608_224157.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_98_20250608_224224.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_99_20250608_224335.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/images/pothole_9_20250608_214259.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/detector.py" beforeDir="false" afterPath="$PROJECT_DIR$/detector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pothole.db" beforeDir="false" afterPath="$PROJECT_DIR$/pothole.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +85,8 @@
       <workItem from="1749382523225" duration="16152000" />
       <workItem from="1749403931045" duration="13254000" />
       <workItem from="1749449702090" duration="7064000" />
-      <workItem from="1749466763269" duration="2590000" />
+      <workItem from="1749466763269" duration="7615000" />
+      <workItem from="1749475480924" duration="50000" />
     </task>
     <servers />
   </component>
@@ -196,7 +94,7 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DetekcijaRupa$main.coverage" NAME="main Coverage Results" MODIFIED="1749468995030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DetekcijaRupa$main.coverage" NAME="main Coverage Results" MODIFIED="1749471876024" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$detector.coverage" NAME="detector Coverage Results" MODIFIED="1749412062446" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$config.coverage" NAME="config Coverage Results" MODIFIED="1749409076990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$calibrate_severity.coverage" NAME="calibrate_severity Coverage Results" MODIFIED="1749226264419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />

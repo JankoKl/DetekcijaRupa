@@ -2,11 +2,6 @@ import os
 import math
 import cv2
 import numpy as np
-from typing import Tuple
-
-from joblib import logger
-
-from models import Severity
 from config import config
 
 
@@ -23,16 +18,6 @@ def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
 
     return R * c
 
-def parse_gps_data(gps_string):
-    try:
-        parts = gps_string.split(',')
-        if parts[0] == '$GPGGA' and len(parts) >= 6:
-            latitude = float(parts[2])  # Latitude in degrees
-            longitude = float(parts[4])  # Longitude in degrees
-            return latitude, longitude
-    except ValueError:
-        logger.error("GPS data format error")
-    return None, None
 
 def save_detection_image(image: np.ndarray, pothole_id: int, timestamp: str) -> str:
     """Save detection image and return the path"""

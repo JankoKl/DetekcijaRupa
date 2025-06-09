@@ -5,7 +5,7 @@ import torch.nn as nn
 from ultralytics import YOLO
 import logging
 from datetime import datetime
-from typing import Tuple, Optional, List, Dict
+from typing import Tuple,  List, Dict
 import os
 import sys
 

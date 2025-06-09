@@ -6,19 +6,29 @@ from dataclasses import dataclass
 @dataclass
 class Config:
     # GPS Configuration
+    USE_SIMULATION = True  # Set to False to use real GPS
     GPS_PORT: str = 'COM10'
     GPS_BAUDRATE: int = 9600
 
     # Model Paths
     YOLO_MODEL_PATH: str = 'best.pt'
-    MIDAS_MODEL_PATH: str = 'dpt_swin2_large_384.pt'  # Your downloaded model
-    MIDAS_MODEL_TYPE: str = 'dpt_swin2_large_384'  # or 'DPT_Hybrid' or 'MiDaS'
+   # MIDAS_MODEL_PATH: str = 'dpt_swin2_large_384.pt'  # downloaded model
+   # MIDAS_MODEL_TYPE: str = 'dpt_swin2_large_384'  # or 'DPT_Hybrid' or 'MiDaS'
 
-    # Video Configuration
-    VIDEO_FILE: str = 'p.mp4'
-    FRAME_SKIP: int = 3
+    #Input Video Configuration
+    USE_LIVE_CAMERA = False  # Set to True to use live camera, false for video file
     VIDEO_WIDTH: int = 1020
     VIDEO_HEIGHT: int = 500
+      # Video file config
+    VIDEO_FILE: str = 'p.mp4'
+    FRAME_SKIP: int = 3
+      # Live camera config
+    CAMERA_INDEX = 0  # Default webcam index (0 is usually the built-in or first connected camera)
+
+    #Output Video Configuration
+    SAVE_VIDEO = True  # Set to True only when you want to save a video
+    VIDEO_OUTPUT_PATH = "output/demo_output.avi"  # Or .mp4 if supported
+    VIDEO_FPS = 20  # Adjust FPS based on input video
 
     # Database Configuration
     DB_HOST: str = 'localhost'
