@@ -235,6 +235,8 @@ class PotholeDetectionSystem:
                 logger.error(f"Sync error: {e}")
             time.sleep(60)  # Sync every minute
 
+
+
     def run(self):
         """Run the complete system"""
         # Start video processing in a separate thread

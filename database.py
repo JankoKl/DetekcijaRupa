@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 class PotholeDatabase:
+
+
+
     def __init__(self):
         self.db_path = config.DB_PATH  # e.g., 'potholes.db'
         self.init_database()

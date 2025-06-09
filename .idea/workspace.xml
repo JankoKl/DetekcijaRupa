@@ -5,41 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4df60253-8685-4162-9f15-92309831ef78" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.codebuddy/summary.md" beforeDir="false" afterPath="$PROJECT_DIR$/.codebuddy/summary.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/DetekcijaRupa.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DetekcijaRupa.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimulacijaGPS.py" beforeDir="false" afterPath="$PROJECT_DIR$/SimulacijaGPS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/logging.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/settings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/capture/frame_capture.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/data/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/data/repository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/detection/depth_detector.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/detection/detector.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/detection/processor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/detection/severity.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/gps/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/gps/serial_receiver.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/gps/simulator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/services/pothole_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/geocoding_cache.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/potholes.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/videos/p.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/geocoding_cache.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/telegram/bot.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/interfaces/telegram/handlers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/errors.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/pothole_detection.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/pothole_detector.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detector.py" beforeDir="false" afterPath="$PROJECT_DIR$/detector.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/best.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/calibrate_severity.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/token.env" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolov8_instance_segmentation_on_custom_dataset.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pothole.db" beforeDir="false" afterPath="$PROJECT_DIR$/pothole.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +84,8 @@
       <workItem from="1749362433176" duration="13752000" />
       <workItem from="1749382523225" duration="16152000" />
       <workItem from="1749403931045" duration="13254000" />
-      <workItem from="1749449702090" duration="619000" />
+      <workItem from="1749449702090" duration="7064000" />
+      <workItem from="1749466763269" duration="906000" />
     </task>
     <servers />
   </component>
@@ -121,12 +93,12 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DetekcijaRupa$main.coverage" NAME="main Coverage Results" MODIFIED="1749449888709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DetekcijaRupa$main.coverage" NAME="main Coverage Results" MODIFIED="1749467517040" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$detector.coverage" NAME="detector Coverage Results" MODIFIED="1749412062446" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$config.coverage" NAME="config Coverage Results" MODIFIED="1749409076990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$calibrate_severity.coverage" NAME="calibrate_severity Coverage Results" MODIFIED="1749226264419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
-    <SUITE FILE_PATH="coverage/DetekcijaRupa$database.coverage" NAME="database Coverage Results" MODIFIED="1749415149868" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DetekcijaRupa$database.coverage" NAME="database Coverage Results" MODIFIED="1749454147197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/DetekcijaRupa$settings.coverage" NAME="settings Coverage Results" MODIFIED="1749202160812" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/config" />
-    <SUITE FILE_PATH="coverage/DetekcijaRupa$SimulacijaGPS.coverage" NAME="SimulacijaGPS Coverage Results" MODIFIED="1749416040591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DetekcijaRupa$SimulacijaGPS.coverage" NAME="SimulacijaGPS Coverage Results" MODIFIED="1749467552547" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
