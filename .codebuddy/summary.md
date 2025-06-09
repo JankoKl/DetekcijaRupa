@@ -1,35 +1,43 @@
 # Project Summary
 
 ## Overview of Languages, Frameworks, and Main Libraries Used
-The project appears to be developed primarily in Python, utilizing various libraries for specific functionalities. The use of frameworks and libraries likely includes:
-
-- Python standard libraries for basic functionality.
-- Libraries for logging and configuration management (e.g., `logging`).
-- Possible use of machine learning or computer vision libraries (implied by the presence of YOLO-related files).
+The project primarily utilizes the following technologies:
+- **Languages**: Python, Java, Swift, C++
+- **Frameworks**: TensorFlow Lite, ROS (Robot Operating System)
+- **Main Libraries**: 
+  - TensorFlow for deep learning tasks
+  - Various Android libraries for mobile development
+  - OpenCV for image processing (implied by the context)
 
 ## Purpose of the Project
-The purpose of this project seems to be related to GPS simulation and detection of potholes, likely using computer vision techniques. The project includes components for capturing video frames, processing data, and interfacing with Telegram for notifications or alerts regarding detected potholes.
+The project appears to be focused on simulating GPS functionality and processing data related to potholes, possibly for a navigation or mapping application. It integrates machine learning models for depth estimation and object detection, likely to enhance the understanding of the environment in which the GPS operates.
 
 ## Build and Configuration Files
-The following files are relevant for the configuration and building of the project:
+The relevant files for configuration and building the project are as follows:
 
-- `/config/__init__.py`
-- `/config/logging.py`
-- `/config/settings.py`
+1. `/model_cache/intel-isl_MiDaS_master/Dockerfile`
+2. `/model_cache/intel-isl_MiDaS_master/environment.yaml`
+3. `/model_cache/intel-isl_MiDaS_master/mobile/android/app/build.gradle`
+4. `/model_cache/intel-isl_MiDaS_master/mobile/android/gradle/wrapper/gradle-wrapper.properties`
+5. `/model_cache/intel-isl_MiDaS_master/mobile/android/lib_support/build.gradle`
+6. `/model_cache/intel-isl_MiDaS_master/mobile/android/lib_task_api/build.gradle`
+7. `/model_cache/intel-isl_MiDaS_master/ros/midas_cpp/CMakeLists.txt`
+8. `/model_cache/intel-isl_MiDaS_master/ros/midas_cpp/package.xml`
+9. `/model_cache/intel-isl_MiDaS_master/ros/additions/do_catkin_make.sh`
 
-## Source Files Directories
+## Source Files Location
 The source files can be found in the following directories:
-
-- `/core/capture/`
-- `/core/data/`
-- `/core/detection/`
-- `/core/gps/`
-- `/core/services/`
-- `/interfaces/telegram/`
-- `/scripts/`
+- `/`
+- `/data/offline_logs/corrupted`
+- `/model_cache/intel-isl_MiDaS_master/midas`
+- `/model_cache/intel-isl_MiDaS_master/mobile/android/app/src/main/java/org/tensorflow/lite/examples/classification`
+- `/model_cache/intel-isl_MiDaS_master/ros/midas_cpp/src`
 
 ## Documentation Files Location
-Documentation files are located in the root directory and the `/scripts/` directory:
-
-- `/SimulacijaGPS.py`
-- `/scripts/yolov8_instance_segmentation_on_custom_dataset.ipynb` (this Jupyter notebook may contain documentation or usage instructions related to the project)
+Documentation files are located in the following paths:
+- `/README.md`
+- `/model_cache/intel-isl_MiDaS_master/Dockerfile`
+- `/model_cache/intel-isl_MiDaS_master/README.md`
+- `/model_cache/intel-isl_MiDaS_master/mobile/android/README.md`
+- `/model_cache/intel-isl_MiDaS_master/ros/README.md`
+- `/model_cache/intel-isl_MiDaS_master/mobile/ios/README.md`
