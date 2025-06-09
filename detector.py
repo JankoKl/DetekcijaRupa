@@ -125,25 +125,30 @@ class PotholeDetector:
             # Convert to numpy
             depth_map = prediction.cpu().numpy()
 
-            # MiDaS outputs inverse depth, so invert it
-            # Avoid division by zero
-            depth_map = np.where(depth_map > 0, 1.0 / depth_map, 0)
+            # Normalize depth map
+            depth_map = np.abs(depth_map)
 
-            # Normalize depth map to a reasonable range
-            # This scaling factor needs calibration based on your camera setup
-            DEPTH_SCALE_FACTOR = 0.5  # Adjust this based on your camera
-            depth_map = depth_map * DEPTH_SCALE_FACTOR
+            # Avoid division by zero by creating a mask
+            valid_mask = depth_map > 0
+            depth_map_inv = np.zeros_like(depth_map)
+
+            # Invert only valid depth values
+            depth_map_inv[valid_mask] = 1.0 / depth_map[valid_mask]
+
+            # Scale the depth map to a reasonable range
+            DEPTH_SCALE_FACTOR = 0.5  # Adjust this based on your camera setup
+            depth_map_inv *= DEPTH_SCALE_FACTOR
 
             # Apply mask to get pothole region only
             mask_binary = mask.astype(bool)
-            pothole_depth = depth_map[mask_binary]
+            pothole_depth = depth_map_inv[mask_binary]
 
             if len(pothole_depth) > 0:
                 # Get surrounding area for reference
                 kernel = np.ones((15, 15), np.uint8)
                 dilated_mask = cv2.dilate(mask.astype(np.uint8), kernel, iterations=2)
                 surrounding_mask = (dilated_mask - mask.astype(np.uint8)) > 0
-                surrounding_depth = depth_map[surrounding_mask]
+                surrounding_depth = depth_map_inv[surrounding_mask]
 
                 if len(surrounding_depth) > 0:
                     # Calculate relative depth using percentiles for robustness
@@ -156,28 +161,26 @@ class PotholeDetector:
                     avg_depth_meters = abs(pothole_average - surface_level)
 
                     # Apply reasonable bounds for pothole depths
-                    # Most potholes are between 1cm and 30cm deep
                     max_depth_meters = np.clip(max_depth_meters, 0.01, 0.30)
                     avg_depth_meters = np.clip(avg_depth_meters, 0.01, 0.25)
 
                     # Additional scaling based on pothole area
-                    # Larger potholes tend to be deeper
                     area_factor = min(mask.sum() / (image.shape[0] * image.shape[1]) * 10, 2.0)
                     max_depth_meters *= area_factor
                     avg_depth_meters *= area_factor
 
                     logger.debug(f"Depth estimation - Avg: {avg_depth_meters:.3f}m, Max: {max_depth_meters:.3f}m")
 
-                    return avg_depth_meters, max_depth_meters, depth_map
+                    return avg_depth_meters, max_depth_meters, depth_map_inv
                 else:
                     # If we can't get surrounding depth, use default based on area
                     area_ratio = mask.sum() / (image.shape[0] * image.shape[1])
                     default_depth = 0.03 + (area_ratio * 0.5)  # 3cm base + area factor
-                    return default_depth, default_depth * 1.5, depth_map
+                    return default_depth, default_depth * 1.5, depth_map_inv
 
             # Default values if calculation fails
             logger.warning("Using default depth values")
-            return 0.03, 0.05, depth_map
+            return 0.03, 0.05, depth_map_inv
 
         except Exception as e:
             logger.error(f"Error in depth estimation: {e}")
