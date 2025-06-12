@@ -39,7 +39,7 @@ class Config:
     DB_PASSWORD: str = '555333'
 
     # Telegram Bot
-    BOT_TOKEN: str = '7040394124:AAGKEPB8LHwdSQw__w-LMpMsaHrHvtdiB1s'
+    BOT_TOKEN: str = 'Your_Bot_Token'
 
     # Paths
     DATA_DIR: str = 'data'
