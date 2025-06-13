@@ -3,6 +3,7 @@
 ## Overview
 
 The Pothole Detection System is a comprehensive Python application that combines computer vision, GPS tracking, and machine learning to automatically detect and classify potholes on roads. The system uses YOLO for object detection, MiDaS for depth estimation, and provides real-time monitoring capabilities with database storage and Telegram bot integration.
+https://github.com/user-attachments/assets/7018d829-79f0-4ca2-a355-2ac7560b2162
 
 ## Features
 
@@ -123,6 +124,9 @@ GPS_PORT = 'COM10'  # Adjust to your GPS device port
 ```
 
 ## License and Credits
+
+
+
 
 This system integrates several open-source components:
 
