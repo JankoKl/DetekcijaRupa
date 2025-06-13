@@ -27,7 +27,7 @@ class Config:
 
     #Output Video Configuration
     SAVE_VIDEO = True  # Set to True only when you want to save a video
-    VIDEO_OUTPUT_PATH = "output/demo_output.avi"  # Or .mp4 if supported
+    VIDEO_OUTPUT_PATH = ".output/demo_output.avi"  # Or .mp4 if supported
     VIDEO_FPS = 20  # Adjust FPS based on input video
 
     # Database Configuration
