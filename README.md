@@ -39,6 +39,7 @@ pip install ultralytics
 pip install geopy
 pip install pyserial
 pip install numpy
+pip install python-telegram-bot
 ```
 
 ## Configuration
