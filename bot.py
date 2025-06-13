@@ -1,5 +1,8 @@
 import datetime
-from asyncio.windows_events import NULL
+if platform.system() == "Windows":
+    from asyncio.windows_events import NULL
+else:
+    NULL = None  # fallback on Linux
 
 import pandas as pd
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
