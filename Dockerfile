@@ -36,7 +36,7 @@ RUN adduser \
 # into this layer.
 
 # Install required system packages for OpenCV
-RUN apt-get update && apt-get install -y libgl1
+RUN apt-get update && apt-get install -y libgl1 libglib2.0-0 ffmpeg
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
