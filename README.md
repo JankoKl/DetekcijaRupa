@@ -123,6 +123,21 @@ USE_SIMULATION = False
 GPS_PORT = 'COM10'  # Adjust to your GPS device port
 ```
 
+## GitHub Actions CI/CD
+Every push to the main branch:
+
+- Builds Docker container
+- Pushes it to Docker Hub
+- Keeps deployment always up-to-date
+
+#####  Docker Hub image:
+  [jankokl/detekcija-rupa](https://hub.docker.com/repository/docker/jankokl/detekcija-rupa).
+
+
+
+
+
+
 ## License and Credits
 
 
