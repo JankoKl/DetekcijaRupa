@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.so
+*.pyo
+
+# Editor settings
+.vscode/
+.idea/
+*.swp
+
+# Python environments
+env/
+venv/
+*.egg-info/
+*.egg
+*.whl
+
+# Logs, temp files
+*.log
+*.tmp
+*.bak
+
+# Jupyter notebooks (if used temporarily)
+*.ipynb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build/test artifacts (if you add them later)
+build/
+dist/
+.coverage
+.pytest_cache/
+.tox/
