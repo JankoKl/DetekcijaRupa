@@ -1,0 +1,8 @@
+opencv-python
+torch
+torchvision
+ultralytics
+geopy
+pyserial
+numpy
+python-telegram-bot
