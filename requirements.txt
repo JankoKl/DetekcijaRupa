@@ -6,3 +6,4 @@ geopy
 pyserial
 numpy
 python-telegram-bot
+python-dotenv

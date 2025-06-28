@@ -48,6 +48,9 @@ USER appuser
 # Copy the source code into the container.
 COPY . .
 
+COPY .env .  
+RUN mkdir -p /app/data /app/.output && chmod -R 777 /app/data /app/.output
+
 # Expose the port that the application listens on.
 EXPOSE 8000
 
