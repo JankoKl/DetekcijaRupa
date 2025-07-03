@@ -7,3 +7,4 @@ pyserial
 numpy
 python-telegram-bot
 python-dotenv
+timm
