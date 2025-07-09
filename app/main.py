@@ -13,6 +13,8 @@ from detector import PotholeDetector
 from bot import PotholeBot
 from gps_provider import SimulatedGPS, RealGPS
 from utils import save_detection_image
+from prometheus_client import start_http_server, Counter, Summary
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -29,6 +31,18 @@ class PotholeDetectionSystem:
         self.geolocator = Nominatim(user_agent="pothole_detector")
         self.detection_queue = Queue()
         self.running = False
+        # Start Prometheus metrics server
+        start_http_server(8000)  # Exposes /metrics endpoint on localhost:8000
+
+        # Define Prometheus metrics
+        self.pothole_counter = Counter('pothole_detections_total', 'Total potholes detected')
+        self.severity_counter = {
+            'LOW': Counter('pothole_severity_low_total', 'Low severity potholes'),
+            'MEDIUM': Counter('pothole_severity_medium_total', 'Medium severity potholes'),
+            'HIGH': Counter('pothole_severity_high_total', 'High severity potholes'),
+            'CRITICAL': Counter('pothole_severity_critical_total', 'Critical severity potholes'),
+        }
+        self.frame_time = Summary('frame_processing_duration_seconds', 'Time spent processing each frame')
         if config.USE_SIMULATION:
             self.gps = SimulatedGPS()
         else:
@@ -78,6 +92,7 @@ class PotholeDetectionSystem:
             last_gps_data = None
 
             while self.running and cap.isOpened():
+              with self.frame_time.time():
                 ret, frame = cap.read()
                 if not ret:
                     break
@@ -112,6 +127,11 @@ class PotholeDetectionSystem:
                         try:
                             pothole_id = self.db.add_pothole(pothole)
                             if pothole_id:
+                                # Increment Prometheus counters
+                                self.pothole_counter.inc()
+                                severity = pothole.severity.value.upper()
+                                if severity in self.severity_counter:
+                                    self.severity_counter[severity].inc()
                                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                                 image_path = save_detection_image(annotated_frame, pothole_id, timestamp)
                                 logger.info(f"New pothole detected: ID={pothole_id}, "
@@ -186,3 +206,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
