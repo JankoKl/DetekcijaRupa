@@ -189,42 +189,45 @@ class PotholeDetector:
 
     def calculate_severity(self, area: float, depth: float) -> Severity:
         """Calculate severity based on both area and depth"""
+        
         # Convert depth to centimeters for easier comparison
         depth_cm = depth * 100
 
-        # Weighted scoring system
-        area_score = 0
-        depth_score = 0
-
-        # Area scoring (0-50 points)
-        if area < 500:
-            area_score = 10
-        elif area < 1500:
-            area_score = 20
+        # Area scoring (max 35 points)
+        if area < 1000:
+            area_score = 5
         elif area < 3000:
-            area_score = 35
+            area_score = 10
+        elif area < 6000:
+            area_score = 20
+        elif area < 9000:
+            area_score = 30
         else:
-            area_score = 50
+            area_score = 35
 
-        # Depth scoring in cm (0-50 points)
-        if depth_cm < 2:  # Less than 2cm
-            depth_score = 10
-        elif depth_cm < 5:  # Less than 5cm
-            depth_score = 20
-        elif depth_cm < 10:  # Less than 10cm
+        # Depth scoring (max 35 points)
+        if depth_cm < 2:
+            depth_score = 5
+        elif depth_cm < 5:
+            depth_score = 15
+        elif depth_cm < 10:
+            depth_score = 25
+        else:
             depth_score = 35
-        else:  # 10cm or more
-            depth_score = 50
 
         # Total score
         total_score = area_score + depth_score
 
+        # Debug print for calibration
+        print(f"[SeverityCalc] Area: {area}, Depth: {depth:.3f} m ({depth_cm:.2f} cm), "
+            f"Area Score: {area_score}, Depth Score: {depth_score}, Total Score: {total_score}")
+
         # Determine severity
-        if total_score < 25:
+        if total_score < 20:
             return Severity.LOW
-        elif total_score < 50:
+        elif total_score < 40:
             return Severity.MEDIUM
-        elif total_score < 75:
+        elif total_score < 60:
             return Severity.HIGH
         else:
             return Severity.CRITICAL

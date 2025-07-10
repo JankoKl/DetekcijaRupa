@@ -1,5 +1,6 @@
 import serial
 import logging
+import random
 from abc import ABC, abstractmethod
 from geopy.geocoders import Nominatim
 
@@ -99,9 +100,14 @@ class SimulatedGPS(BaseGPS):
     def __init__(self):
         self.geolocator = Nominatim(user_agent="pothole_detector_sim")
 
+        
+        self.lat_min, self.lat_max = 42.2, 46.2
+        self.lon_min, self.lon_max = 18.8, 23.0
+
     def get_gps_data(self):
         try:
-            lat, lon = 44.7866, 20.4489  # Belgrade
+            lat = round(random.uniform(self.lat_min, self.lat_max), 6)
+            lon = round(random.uniform(self.lon_min, self.lon_max), 6)
             city, region = self._get_location_info(lat, lon)
             return {
                 'latitude': lat,

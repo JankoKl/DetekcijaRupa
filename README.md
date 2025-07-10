@@ -1,162 +1,171 @@
-# Pothole Detection System with Telegram Integration
+#  Pothole Detection System with Telegram & APM Integration
 
 ## Overview
 
-The Pothole Detection System is a comprehensive Python application that combines computer vision, GPS tracking, and machine learning to automatically detect and classify potholes on roads. The system uses YOLO for object detection, MiDaS for depth estimation, and provides real-time monitoring capabilities with database storage and Telegram bot integration.
+The Pothole Detection System is a real-time Python-based application that uses computer vision and GPS data to automatically detect potholes in road surfaces. It uses YOLOv8 for object detection, MiDaS for depth estimation, and integrates with a Telegram bot for real-time notifications. It includes full Application Performance Monitoring (APM) using Prometheus and Grafana, as well as Dockerized deployment via Docker Hub.
+
 ![Demonstration gif](https://github.com/user-attachments/assets/2c675218-1e69-4023-a27a-ad3767bbf9e1)
+
+---
 
 ## Features
 
-- **Real-time Pothole Detection**: Uses YOLO v8 for accurate pothole identification  
-- **Depth Estimation**: Employs MiDaS model to calculate pothole depth  
-- **GPS Integration**: Supports both real GPS devices and simulation mode  
-- **Severity Classification**: Automatically categorizes potholes by severity (Low, Medium, High, Critical)  
-- **Database Storage**: SQLite database for persistent data storage  
-- **Offline Support**: Logs detections offline when database is unavailable  
-- **Video Processing**: Supports both live camera feed and video file input  
-- **Video Recording**: Optional output video recording with annotations  
-- **Telegram Bot Integration**: Remote monitoring and data access via Telegram  
-- **Duplicate Detection**: Prevents multiple entries for the same pothole location  
+- Real-time pothole detection (YOLOv8)
+- MiDaS-based depth estimation
+- Live input from video camera or from video file
+- SQLite database for local storage
+- Stores images of detected potholes
+- Telegram bot for real-time updates and interaction
+- Duplicate detection prevention
+- Offline mode with automatic resync
+- GPS integration (real or simulated)
+- Dockerized app with Docker Hub support
+- Exposes Prometheus metrics for monitoring
+- Grafana dashboard to visualize performance metrics
 
-## System Architecture
+---
+
+##  System Architecture
 
 ![Diagram.](imgs/Dijagram.png "Diagram.")
 
-## Installation
+---
 
-### Prerequisites
+##  Configuration
 
-- Python 3.8+  
-- CUDA-compatible GPU (recommended for faster processing)  
-- Webcam or video files for input  
-- GPS device (optional, simulation mode available)  
+Configuration is handled via a `.env` file in the project root. Example:
 
-### Required Dependencies
+```env
+USE_SIMULATION=True
+GPS_PORT=COM10
+GPS_BAUDRATE=9600
+USE_LIVE_CAMERA=False  
+CAMERA_INDEX=0
+VIDEO_FILE=p.mp4
+VIDEO_WIDTH=1020
+VIDEO_HEIGHT=500
+FRAME_SKIP=3
+SAVE_VIDEO=False
+VIDEO_OUTPUT_PATH=output/demo_output.avi
+VIDEO_FPS=20
+DUPLICATE_RADIUS_METERS=5.0
+TELEGRAM_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+```
+
+Make sure to create your own `.env` file or duplicate `.env.example` and update values as needed.
+
+---
+
+##  How to Run
+
+###  Run Locally 
+
+Install dependencies:
 
 ```bash
-pip install opencv-python
-pip install torch torchvision
-pip install ultralytics
-pip install geopy
-pip install pyserial
-pip install numpy
-pip install python-telegram-bot
+pip install -r requirements.txt
 ```
 
-## Configuration
-
-The system is configured through the `config.py` file. Key configuration options include:
-
-#### GPS Configuration
-
-```python
-USE_SIMULATION = True          # Use simulated GPS data
-GPS_PORT = 'COM10'             # Serial port for real GPS
-GPS_BAUDRATE = 9600            # GPS baud rate
-```
-
-#### Video Configuration
-
-```python
-USE_LIVE_CAMERA = False        # True for webcam, False for video file
-VIDEO_FILE = 'p.mp4'           # Input video file path
-VIDEO_WIDTH = 1020             # Frame width
-VIDEO_HEIGHT = 500             # Frame height
-FRAME_SKIP = 3                 # Process every nth frame
-```
-
-#### Output Configuration
-
-```python
-SAVE_VIDEO = True
-VIDEO_OUTPUT_PATH = "output/demo_output.avi"
-VIDEO_FPS = 20
-```
-
-#### Detection Parameters
-
-```python
-DUPLICATE_RADIUS_METERS = 5.0  # Duplicate detection radius
-```
-
-## Usage
-
-### Basic Usage
-
-1. Configure the system: Edit `config.py` with your desired settings  
-2. Run the system:
+Start the app:
 
 ```bash
-python main.py
+python app/main.py
 ```
 
-### Input Modes
+Metrics will be available at: `http://localhost:8000/metrics`
 
-#### Live Camera Mode
+> **Note:** You must have a `.env` file configured correctly before running.
 
-```python
-USE_LIVE_CAMERA = True
-CAMERA_INDEX = 0  # Default webcam
+---
+
+### Run from Docker Hub (No Setup Required)
+
+> Requires [Docker](https://www.docker.com/products/docker-desktop)
+
+```bash
+docker run -p 8000:8000 --env-file=.env jankokl/detekcija-rupa
 ```
 
-#### Video File Mode
+This will pull and run the latest container image from Docker Hub.
 
-```python
-USE_LIVE_CAMERA = False
-VIDEO_FILE = 'path/to/your/video.mp4'
+Docker Hub link: [jankokl/detekcija-rupa](https://hub.docker.com/repository/docker/jankokl/detekcija-rupa)
+
+---
+
+## APM & Monitoring
+
+The application exposes Prometheus-compatible metrics on `/metrics` (default port: `8000`).
+
+To monitor metrics using Prometheus + Grafana:
+
+### Step 1: Start Monitoring Stack
+
+```bash
+docker-compose up
 ```
 
-### GPS Modes
+This starts:
+- Prometheus (on port 9090)
+- Grafana (on port 3000)
 
-#### Simulation Mode (Default)
+### Step 2: View Metrics
 
-```python
-USE_SIMULATION = True
-```
+- Prometheus UI: [http://localhost:9090](http://localhost:9090)
+- Grafana Dashboard: [http://localhost:3000](http://localhost:3000)
 
-Uses predefined Belgrade coordinates for testing.
+Metrics include:
+- `pothole_detections_total`
+- `pothole_severity_<level>_total`
+- `frame_processing_duration_seconds`
 
-#### Real GPS Mode
+Grafana is preconfigured to scrape these via Prometheus.
 
-```python
-USE_SIMULATION = False
-GPS_PORT = 'COM10'  # Adjust to your GPS device port
-```
+> ![Grafana dashboard](imgs/grafana.png)
 
-## GitHub Actions CI/CD
-Every push to the main branch:
+---
 
-- Builds Docker container
-- Pushes it to Docker Hub
-- Keeps deployment always up-to-date
+##  Telegram Bot
 
-#####  Docker Hub image:
-  [jankokl/detekcija-rupa](https://hub.docker.com/repository/docker/jankokl/detekcija-rupa).
+Interact with the system via Telegram. Available commands:
 
+- `/start` – Help
+- `/locations` – Browse pothole locations
+- `/map` – View all on Google Maps
+- `/stats` – System statistics
+- `/help` – List of commands
 
+![Telegram bot screenshot.](imgs/photo_2025-06-12_00-26-59.jpg)
 
+---
 
+##  CI/CD Pipeline
 
+GitHub Actions build the Docker image and push it to Docker Hub on each commit to `main`.
 
-## License and Credits
+---
 
+##  Built With
 
+- Python 3.11
+- OpenCV
+- PyTorch + YOLOv8
+- MiDaS
+- SQLite
+- Docker
+- Prometheus
+- Grafana
+- Telegram Bot API
 
+---
 
-This system integrates several open-source components:
+##  Author
 
-- **YOLO**: Ultralytics YOLO v8  
-- **MiDaS**: Intel ISL depth estimation  
-- **OpenCV**: Computer vision operations  
-- **PyTorch**: Machine learning framework  
+**Janko Klikovac**  
+GitHub: [@JankoKl](https://github.com/JankoKl)
 
+---
 
-### Telegram Bot Commands
+## 
 
-- `/start` - Show this help message  
-- `/locations` - Browse pothole locations by region  
-- `/map` - Get a Google Maps link with all locations  
-- `/stats` - View detection statistics  
-- `/help`
-
-[![Telegram bot screenshot.](imgs/photo_2025-06-12_00-26-59.jpg "Telegram bot screenshot.")](https://t.me/potholedetectionBOT)
+This project uses open-source components and is intended for educational and research purposes.
