@@ -129,7 +129,7 @@ Grafana is preconfigured to scrape these via Prometheus.
 
 Interact with the system via Telegram. Available commands:
 
-- `/start` – Help
+- `/start` 
 - `/locations` – Browse pothole locations
 - `/map` – View all on Google Maps
 - `/stats` – System statistics
