@@ -25,8 +25,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy everything else
 COPY . .
 
-# Optional: copy default .env if needed
-# COPY .env .   ← only needed if you want to bake it into the image
+
 
 # Create a non-root user *after* installing packages (best practice)
 RUN adduser --disabled-password --gecos "" --uid 10001 appuser
@@ -35,4 +34,4 @@ RUN adduser --disabled-password --gecos "" --uid 10001 appuser
 USER appuser
 
 # Default command to run the app
-CMD ["python", "main.py"]
+CMD ["python", "app/main.py"]
