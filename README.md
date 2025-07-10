@@ -79,7 +79,7 @@ Metrics will be available at: `http://localhost:8000/metrics`
 
 ---
 
-### Run from Docker Hub (No Setup Required)
+### Run from Docker Hub 
 
 > Requires [Docker](https://www.docker.com/products/docker-desktop)
 
