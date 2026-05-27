@@ -1,7 +1,12 @@
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(__file__))
+
 import sqlite3
 from contextlib import contextmanager
 import json
-import os
+import math
 from datetime import datetime
 from typing import List, Optional, Dict
 import logging
@@ -15,10 +20,8 @@ logger = logging.getLogger(__name__)
 
 class PotholeDatabase:
 
-
-
     def __init__(self):
-        self.db_path = config.DB_PATH  # e.g., 'potholes.db'
+        self.db_path = config.DB_PATH
         self.init_database()
 
     @contextmanager
@@ -58,16 +61,92 @@ class PotholeDatabase:
             cur.execute("CREATE INDEX IF NOT EXISTS idx_severity ON potholes(severity)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_timestamp ON potholes(timestamp)")
 
-    def is_duplicate(self, latitude: float, longitude: float) -> bool:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    chat_id INTEGER PRIMARY KEY,
+                    username TEXT,
+                    first_name TEXT,
+                    role TEXT DEFAULT 'viewer',
+                    joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    last_seen TEXT
+                )
+            """)
+
+    # ------------------------------------------------------------------ #
+    # Korisnici                                                            #
+    # ------------------------------------------------------------------ #
+
+    def register_user(self, chat_id: int, username: str, first_name: str) -> str:
+        """
+        Registruje korisnika ako vec ne postoji.
+        Admin je onaj ciji chat_id odgovara ADMIN_CHAT_ID iz .env
+        Vraca ulogu: 'admin' ili 'viewer'
+        """
+        role = 'admin' if str(chat_id) == str(config.ADMIN_CHAT_ID) else 'viewer'
+        now = datetime.now().isoformat()
+
         with self.get_connection() as conn:
             cur = conn.cursor()
-            cur.execute("SELECT latitude, longitude FROM potholes")
+            cur.execute("""
+                INSERT INTO users (chat_id, username, first_name, role, joined_at, last_seen)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(chat_id) DO UPDATE SET
+                    last_seen = excluded.last_seen,
+                    username = excluded.username
+            """, (chat_id, username, first_name, role, now, now))
+
+        return role
+
+    def get_user_role(self, chat_id: int) -> Optional[str]:
+        with self.get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT role FROM users WHERE chat_id = ?", (chat_id,))
+            row = cur.fetchone()
+            return row['role'] if row else None
+
+    def get_all_admin_chat_ids(self) -> List[int]:
+        with self.get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT chat_id FROM users WHERE role = 'admin'")
+            return [row['chat_id'] for row in cur.fetchall()]
+
+    def get_all_chat_ids(self) -> List[int]:
+        with self.get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT chat_id FROM users")
+            return [row['chat_id'] for row in cur.fetchall()]
+
+    def get_user_count(self) -> Dict:
+        with self.get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT role, COUNT(*) as count FROM users GROUP BY role")
+            return {row['role']: row['count'] for row in cur.fetchall()}
+
+    # ------------------------------------------------------------------ #
+    # Rupe                                                                 #
+    # ------------------------------------------------------------------ #
+
+    def is_duplicate(self, latitude: float, longitude: float) -> bool:
+        radius_m = config.DUPLICATE_RADIUS_METERS
+        lat_margin = radius_m / 111_000.0
+        lon_margin = radius_m / (111_000.0 * max(math.cos(math.radians(latitude)), 0.0001))
+
+        with self.get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT latitude, longitude FROM potholes
+                WHERE latitude  BETWEEN ? AND ?
+                  AND longitude BETWEEN ? AND ?
+            """, (
+                latitude - lat_margin, latitude + lat_margin,
+                longitude - lon_margin, longitude + lon_margin,
+            ))
             for row in cur.fetchall():
                 distance = calculate_distance(
                     latitude, longitude,
                     row['latitude'], row['longitude']
                 )
-                if distance <= config.DUPLICATE_RADIUS_METERS:
+                if distance <= radius_m:
                     return True
         return False
 
@@ -114,7 +193,11 @@ class PotholeDatabase:
         if sort_by not in valid_sort_columns:
             sort_by = 'timestamp'
 
-        query += f" ORDER BY {sort_by} {sort_order}"
+        valid_sort_orders = ['ASC', 'DESC']
+        if sort_order.upper() not in valid_sort_orders:
+            sort_order = 'DESC'
+
+        query += f" ORDER BY {sort_by} {sort_order.upper()}"
 
         if limit:
             query += f" LIMIT {limit}"
@@ -141,6 +224,9 @@ class PotholeDatabase:
                 for row in rows
             ]
 
+    def get_latest_potholes(self, limit: int = 5) -> List[Pothole]:
+        return self.get_potholes(sort_by='timestamp', sort_order='DESC', limit=limit)
+
     def get_statistics(self) -> Dict:
         with self.get_connection() as conn:
             cur = conn.cursor()
@@ -148,36 +234,35 @@ class PotholeDatabase:
             cur.execute("SELECT COUNT(*) AS total FROM potholes")
             total = cur.fetchone()['total']
 
-            cur.execute("""
-                SELECT severity, COUNT(*) AS count
-                FROM potholes GROUP BY severity
-            """)
+            cur.execute("SELECT severity, COUNT(*) AS count FROM potholes GROUP BY severity")
             severity_stats = {row['severity']: row['count'] for row in cur.fetchall()}
 
             cur.execute("""
                 SELECT region, COUNT(*) AS count
-                FROM potholes
-                GROUP BY region
-                ORDER BY count DESC
-                LIMIT 10
+                FROM potholes GROUP BY region
+                ORDER BY count DESC LIMIT 10
             """)
             region_stats = [(row['region'], row['count']) for row in cur.fetchall()]
+
+            today = datetime.now().strftime('%Y-%m-%d')
+            cur.execute("SELECT COUNT(*) AS count FROM potholes WHERE timestamp LIKE ?", (f"{today}%",))
+            today_count = cur.fetchone()['count']
 
             return {
                 'total': total,
                 'by_severity': severity_stats,
-                'top_regions': region_stats
+                'top_regions': region_stats,
+                'today': today_count
             }
 
     def save_offline_log(self, potholes: List[Pothole]):
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = os.path.join(config.OFFLINE_LOG_DIR, f'potholes_{timestamp}.json')
 
-        # Convert potholes to serializable format
         data = []
         for p in potholes:
-            pothole_dict = {
-                'latitude': float(p.latitude),  # Convert to Python float
+            data.append({
+                'latitude': float(p.latitude),
                 'longitude': float(p.longitude),
                 'city': str(p.city),
                 'region': str(p.region),
@@ -187,8 +272,7 @@ class PotholeDatabase:
                 'confidence': float(p.confidence),
                 'timestamp': p.timestamp.isoformat() if isinstance(p.timestamp, datetime) else str(p.timestamp),
                 'image_path': p.image_path
-            }
-            data.append(pothole_dict)
+            })
 
         try:
             with open(filename, 'w') as f:
@@ -198,7 +282,6 @@ class PotholeDatabase:
             logger.error(f"Error saving offline log: {e}")
 
     def sync_offline_logs(self):
-        """Sync offline logs to database when connection is restored"""
         if not os.path.exists(config.OFFLINE_LOG_DIR):
             return
 
@@ -224,18 +307,14 @@ class PotholeDatabase:
                         )
                         self.add_pothole(pothole)
 
-                    # Remove synced file
                     os.remove(filepath)
                     logger.info(f"Synced and removed offline log: {filename}")
 
                 except json.JSONDecodeError as e:
                     logger.error(f"Corrupted JSON file {filename}: {e}")
-                    # Optionally move corrupted file to a backup directory
                     backup_dir = os.path.join(config.OFFLINE_LOG_DIR, 'corrupted')
                     os.makedirs(backup_dir, exist_ok=True)
                     os.rename(filepath, os.path.join(backup_dir, filename))
-                    logger.info(f"Moved corrupted file to {backup_dir}")
 
                 except Exception as e:
                     logger.error(f"Error syncing offline log {filename}: {e}")
-

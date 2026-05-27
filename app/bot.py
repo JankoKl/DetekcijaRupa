@@ -1,14 +1,18 @@
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(__file__))
+
 import datetime
-import platform
-if platform.system() == "Windows":
-    from asyncio.windows_events import NULL
-else:
-    NULL = None  # fallback on Linux
+import urllib.parse
+import logging
 
 import pandas as pd
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
-import logging
+from telegram.ext import (
+    Application, CommandHandler, CallbackQueryHandler,
+    ContextTypes, MessageHandler, filters
+)
 
 from config import config
 from database import PotholeDatabase
@@ -16,908 +20,897 @@ from models import Pothole
 
 logger = logging.getLogger(__name__)
 
+SEVERITY_EMOJIS = {
+    'low': '🟢',
+    'medium': '🟡',
+    'high': '🟠',
+    'critical': '🔴'
+}
+
+
 class PotholeBot:
     def __init__(self, db: PotholeDatabase):
         self.db = db
         self.application = Application.builder().token(config.BOT_TOKEN).build()
         self.setup_handlers()
 
+    # ------------------------------------------------------------------ #
+    # Handlers setup                                                       #
+    # ------------------------------------------------------------------ #
+
     def setup_handlers(self):
-        """Set up bot command handlers"""
+        # Komande
         self.application.add_handler(CommandHandler('start', self.start))
-        self.application.add_handler(CommandHandler('help', self.help_command_interactive))
+        self.application.add_handler(CommandHandler('help', self.help_command))
         self.application.add_handler(CommandHandler('locations', self.display_locations))
         self.application.add_handler(CommandHandler('map', self.send_map))
         self.application.add_handler(CommandHandler('stats', self.send_stats))
+        self.application.add_handler(CommandHandler('severity', self.display_by_severity))
+        self.application.add_handler(CommandHandler('latest', self.send_latest))
+        self.application.add_handler(CommandHandler('status', self.send_status))
+        self.application.add_handler(CommandHandler('export', self.export_csv))
 
-        # Region and location handlers
+        # Callback handleri — regioni
         self.application.add_handler(CallbackQueryHandler(self.show_locations_in_region, pattern='^region:'))
         self.application.add_handler(CallbackQueryHandler(self.show_region_stats, pattern='^stats:'))
         self.application.add_handler(CallbackQueryHandler(self.back_to_regions, pattern='^back_to_regions$'))
-        self.application.add_handler(CallbackQueryHandler(self.noop_handler, pattern='^noop$'))
 
-        # Severity handlers
+        # Callback handleri — severity
         self.application.add_handler(CallbackQueryHandler(self.show_potholes_by_severity, pattern='^severity:'))
+        self.application.add_handler(CallbackQueryHandler(self.back_to_severity_menu, pattern='^back_to_severity$'))
 
-        # Help handlers
+        # Callback handleri — latest / slike
+        self.application.add_handler(CallbackQueryHandler(self.send_pothole_image, pattern='^image:'))
+
+        # Callback handleri — help
         self.application.add_handler(CallbackQueryHandler(self.help_topic_handler, pattern='^help:(?!menu)'))
         self.application.add_handler(CallbackQueryHandler(self.help_menu_handler, pattern='^help:menu$'))
 
-        # Location coordinate handler (must be last to avoid conflicts)
-        self.application.add_handler(CallbackQueryHandler(self.send_location, pattern=r'^-?\d+\.\d+,-?\d+\.\d+$'))
+        # Callback handleri — ostalo
+        self.application.add_handler(CallbackQueryHandler(self.send_location, pattern=r'^loc:'))
+        self.application.add_handler(CallbackQueryHandler(self.noop_handler, pattern='^noop$'))
 
-        self.application.add_handler(CommandHandler('severity', self.display_by_severity))
-        self.application.add_handler(CommandHandler('export', self.export_csv))
+        # Sve nepoznate poruke — triggeruje start
+        self.application.add_handler(
+            MessageHandler(filters.TEXT & ~filters.COMMAND, self.unknown_message)
+        )
+
+    # ------------------------------------------------------------------ #
+    # Pomocne funkcije                                                     #
+    # ------------------------------------------------------------------ #
+
+    @staticmethod
+    def _safe_float(value) -> float:
+        try:
+            if isinstance(value, bytes):
+                value = value.decode('utf-8', errors='ignore')
+            return float(value) if value is not None else 0.0
+        except (ValueError, AttributeError):
+            return 0.0
+
+    def _is_admin(self, chat_id: int) -> bool:
+        return self.db.get_user_role(chat_id) == 'admin'
+
+    def _register(self, update: Update) -> str:
+        """Registruje korisnika i vraca njegovu ulogu."""
+        user = update.effective_user
+        return self.db.register_user(
+            chat_id=user.id,
+            username=user.username or '',
+            first_name=user.first_name or ''
+        )
+
+    def _main_keyboard(self) -> InlineKeyboardMarkup:
+        """Glavna tastatura sa svim komandama kao dugmadi."""
+        keyboard = [
+            [
+                InlineKeyboardButton("📍 Lokacije", callback_data="cmd:locations"),
+                InlineKeyboardButton("🚨 Po težini", callback_data="cmd:severity"),
+            ],
+            [
+                InlineKeyboardButton("🗺️ Mapa", callback_data="cmd:map"),
+                InlineKeyboardButton("📊 Statistike", callback_data="cmd:stats"),
+            ],
+            [
+                InlineKeyboardButton("🕒 Najnovije", callback_data="cmd:latest"),
+                InlineKeyboardButton("📡 Status", callback_data="cmd:status"),
+            ],
+            [
+                InlineKeyboardButton("📥 Export CSV", callback_data="cmd:export"),
+                InlineKeyboardButton("❓ Pomoć", callback_data="help:menu"),
+            ],
+        ]
+        return InlineKeyboardMarkup(keyboard)
+
+    # ------------------------------------------------------------------ #
+    # Notifikacije (poziva main.py kad se detektuje nova rupa)            #
+    # ------------------------------------------------------------------ #
+
+    async def notify_new_pothole(self, pothole: Pothole):
+        """
+        Šalje notifikaciju svim adminima kad se detektuje HIGH ili CRITICAL rupa.
+        Poziva se iz main.py nakon uspešnog upisa u bazu.
+        """
+        if pothole.severity.value not in ('high', 'critical'):
+            return
+
+        admin_ids = self.db.get_all_admin_chat_ids()
+        if not admin_ids:
+            return
+
+        emoji = SEVERITY_EMOJIS.get(pothole.severity.value, '⚪')
+        depth_cm = self._safe_float(pothole.depth) * 100
+
+        message = (
+            f"🚨 *Nova rupa detektovana!*\n\n"
+            f"{emoji} Težina: *{pothole.severity.value.upper()}*\n"
+            f"📍 Lokacija: {pothole.city}, {pothole.region}\n"
+            f"📏 Dubina: {depth_cm:.1f}cm\n"
+            f"🕒 {pothole.timestamp.strftime('%H:%M:%S')}\n\n"
+            f"`{pothole.latitude:.5f}, {pothole.longitude:.5f}`"
+        )
+
+        keyboard = [[InlineKeyboardButton(
+            "📍 Vidi na mapi",
+            callback_data=f"loc:{pothole.latitude},{pothole.longitude}"
+        )]]
+
+        for chat_id in admin_ids:
+            try:
+                await self.application.bot.send_message(
+                    chat_id=chat_id,
+                    text=message,
+                    parse_mode='Markdown',
+                    reply_markup=InlineKeyboardMarkup(keyboard)
+                )
+                # Ako postoji slika, posalji i nju
+                if pothole.image_path and os.path.exists(pothole.image_path):
+                    with open(pothole.image_path, 'rb') as img:
+                        await self.application.bot.send_photo(
+                            chat_id=chat_id,
+                            photo=img,
+                            caption=f"{emoji} {pothole.city} — {pothole.severity.value.upper()}"
+                        )
+            except Exception as e:
+                logger.error(f"Greška pri slanju notifikacije adminu {chat_id}: {e}")
+
+    # ------------------------------------------------------------------ #
+    # Komande                                                              #
+    # ------------------------------------------------------------------ #
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send welcome message"""
+        role = self._register(update)
+        user = update.effective_user
+        stats = self.db.get_statistics()
+
+        role_text = "👑 Admin" if role == 'admin' else "👤 Viewer"
+
         message = (
-            "*🚗 Pothole Info Bot 🚗*\n\n"
-            "Welcome! This bot helps you track detected potholes.\n\n"
-            "*Available Commands:*\n"
-            "/start - Show this help message\n"
-            "/locations - Browse pothole locations by region\n"
-            "/map - Get a Google Maps link with all locations\n"
-            "/stats - View detection statistics\n\n"
-            "Stay safe on the roads! 🛣️"
+            f"*🚗 Sistem za detekciju rupa na putu*\n\n"
+            f"Dobrodošao, *{user.first_name}*! {role_text}\n\n"
+            f"📊 Trenutno u bazi:\n"
+            f"• Ukupno rupa: *{stats['total']}*\n"
+            f"• Danas detektovano: *{stats.get('today', 0)}*\n"
+            f"• 🔴 Kritičnih: *{stats['by_severity'].get('critical', 0)}*\n\n"
+            f"Izaberi akciju:"
         )
-        await update.message.reply_text(message, parse_mode='Markdown')
+
+        await update.message.reply_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=self._main_keyboard()
+        )
+
+    async def unknown_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Svaka nepoznata poruka triggeruje start."""
+        await self.start(update, context)
 
     async def send_stats(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send detection statistics"""
         stats = self.db.get_statistics()
         total = stats['total']
         severity_stats = stats['by_severity']
         top_regions = stats['top_regions']
+        today = stats.get('today', 0)
 
-        message = f"*📊 Pothole Detection Statistics*\n\nTotal Potholes Detected: {total}\n"
-        for severity, count in severity_stats.items():
-            message += f"{severity.capitalize()}: {count}\n"
+        message = (
+            f"*📊 Statistike detekcije rupa*\n\n"
+            f"Ukupno detektovano: *{total}*\n"
+            f"Danas: *{today}*\n\n"
+            f"*Po težini:*\n"
+        )
+        for severity, emoji in SEVERITY_EMOJIS.items():
+            count = severity_stats.get(severity, 0)
+            pct = (count / total * 100) if total > 0 else 0
+            message += f"{emoji} {severity.capitalize()}: {count} ({pct:.0f}%)\n"
 
-        message += "\n*Top Regions:*\n"
-        for region, count in top_regions:
-            message += f"• {region}: {count} potholes\n"
+        if top_regions:
+            message += "\n*Top regioni:*\n"
+            for region, count in top_regions[:5]:
+                message += f"• {region}: {count} rupa\n"
 
-        await update.message.reply_text(message, parse_mode='Markdown')
+        keyboard = [[InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")]]
+        await update.message.reply_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
     async def send_map(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send Google Maps link with all pothole locations"""
         potholes = self.db.get_potholes()
         if not potholes:
-            await update.message.reply_text("No pothole locations available.")
+            await update.message.reply_text("Nema lokacija u bazi.")
             return
 
         base_url = "https://www.google.com/maps/dir/?api=1"
         locations = [f"{p.latitude},{p.longitude}" for p in potholes]
         destination = locations[0]
-        waypoints = "|".join(locations[1:])
+        waypoints = "|".join(locations[1:20])  # Google Maps limit
 
         url = f"{base_url}&destination={destination}"
         if waypoints:
-            import urllib
             url += f"&waypoints={urllib.parse.quote(waypoints)}"
 
-        message = f"📍 *Pothole Locations Map*\n\nTotal locations: {len(potholes)}\n"
-        message += f"[View on Google Maps]({url})"
+        message = (
+            f"🗺️ *Mapa rupa na putu*\n\n"
+            f"Prikazano lokacija: {min(len(potholes), 20)} od {len(potholes)}\n"
+            f"[Otvori Google Maps]({url})"
+        )
         await update.message.reply_text(message, parse_mode='Markdown')
 
-    async def display_locations(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Display regions with pothole detections"""
-        # Get all potholes
-        potholes = self.db.get_potholes()
-
+    async def send_latest(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        potholes = self.db.get_latest_potholes(limit=5)
         if not potholes:
-            await update.message.reply_text("No pothole locations available.")
+            await update.message.reply_text("Nema detektovanih rupa.")
             return
 
-        # Extract unique regions and count potholes per region
-        region_counts = {}
-        for pothole in potholes:
-            if pothole.region:
-                region_counts[pothole.region] = region_counts.get(pothole.region, 0) + 1
-
-        if not region_counts:
-            await update.message.reply_text("No regions with pothole data available.")
-            return
-
+        message = "*🕒 Poslednjih 5 detektovanih rupa:*\n\n"
         keyboard = []
-        for region in sorted(region_counts.keys()):
-            count = region_counts[region]
-            button_text = f"{region} ({count} potholes)"
-            callback_data = f"region:{region}:all:0"  # region:name:filter:page
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
 
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text(
-            "Select a region to view pothole locations:",
-            reply_markup=reply_markup
-        )
-
-    async def show_locations_in_region(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Show locations in selected region with sorting options"""
-        query = update.callback_query
-        await query.answer()
-
-        # Parse callback data
-        data_parts = query.data.split(":")
-        region = data_parts[1]
-        sort_by = data_parts[2] if len(data_parts) > 2 else "all"
-        page = int(data_parts[3]) if len(data_parts) > 3 else 0
-
-        ITEMS_PER_PAGE = 5
-
-        # Get potholes for the region
-        if sort_by == "all":
-            potholes = self.db.get_potholes(filters={'region': region}, sort_by='timestamp', sort_order='DESC')
-        else:
-            # Filter by both region and severity
-            potholes = self.db.get_potholes(
-                filters={'region': region, 'severity': sort_by},
-                sort_by='depth',
-                sort_order='DESC'
+        for i, p in enumerate(potholes, 1):
+            emoji = SEVERITY_EMOJIS.get(p.severity.value, '⚪')
+            depth_cm = self._safe_float(p.depth) * 100
+            message += (
+                f"{i}. {emoji} *{p.severity.value.upper()}* — {p.city}, {p.region}\n"
+                f"   📏 {depth_cm:.1f}cm | 🕒 {p.timestamp.strftime('%d.%m %H:%M')}\n\n"
             )
 
-        if not potholes:
-            await query.message.edit_text(f"No potholes found in {region}" +
-                                          (f" with {sort_by} severity." if sort_by != "all" else "."))
-            return
+            row = [InlineKeyboardButton(
+                f"📍 {p.city}",
+                callback_data=f"loc:{p.latitude},{p.longitude}"
+            )]
+            if p.image_path and os.path.exists(p.image_path):
+                row.append(InlineKeyboardButton(
+                    f"📸 Slika",
+                    callback_data=f"image:{p.id}"
+                ))
+            keyboard.append(row)
 
-        # Calculate pagination
-        total_pages = (len(potholes) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
-        start_idx = page * ITEMS_PER_PAGE
-        end_idx = min(start_idx + ITEMS_PER_PAGE, len(potholes))
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")])
+        await update.message.reply_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-        # Build message
-        severity_emojis = {
-            'low': '🟢',
-            'medium': '🟡',
-            'high': '🟠',
-            'critical': '🔴'
-        }
+    async def send_status(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        stats = self.db.get_statistics()
+        user_counts = self.db.get_user_count()
 
-        title = f"*Potholes in {region}*"
-        if sort_by != "all":
-            title += f" - {sort_by.capitalize()} Severity"
+        message = (
+            f"*📡 Status sistema*\n\n"
+            f"🟢 Bot: Aktivan\n"
+            f"🗄️ Baza: {stats['total']} rupa\n"
+            f"📅 Danas: {stats.get('today', 0)} novih\n\n"
+            f"*Korisnici:*\n"
+            f"👑 Admini: {user_counts.get('admin', 0)}\n"
+            f"👤 Vieweri: {user_counts.get('viewer', 0)}\n\n"
+            f"*Po težini:*\n"
+        )
+        for severity, emoji in SEVERITY_EMOJIS.items():
+            count = stats['by_severity'].get(severity, 0)
+            message += f"{emoji} {severity.capitalize()}: {count}\n"
 
-        message = f"{title}\n"
-        message += f"_Page {page + 1} of {total_pages} • Total: {len(potholes)} potholes_\n\n"
+        await update.message.reply_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")
+            ]])
+        )
 
-        # Display potholes with proper data type handling
-        for i, pothole in enumerate(potholes[start_idx:end_idx], start=start_idx + 1):
-            emoji = severity_emojis.get(pothole.severity.value, '⚪')
-            message += f"{i}. {emoji} *{pothole.city}*\n"
-            message += f"   Severity: {pothole.severity.value.capitalize()}\n"
-
-            # Handle depth and area with proper type conversion
-            try:
-                if isinstance(pothole.depth, bytes):
-                    # If it's bytes, try to decode and convert
-                    depth_str = pothole.depth.decode('utf-8', errors='ignore')
-                    depth = float(depth_str) if depth_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    depth = float(pothole.depth) if pothole.depth is not None else 0.0
-
-                # Convert depth from meters to centimeters
-                depth_cm = depth * 100
-
-                if isinstance(pothole.area, bytes):
-                    # If it's bytes, try to decode and convert
-                    area_str = pothole.area.decode('utf-8', errors='ignore')
-                    area = float(area_str) if area_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    area = float(pothole.area) if pothole.area is not None else 0.0
-
-                message += f"   📏 Depth: {depth_cm:.1f}cm | 📐 Area: {area:.0f}px\n"
-            except (ValueError, AttributeError, UnicodeDecodeError) as e:
-                logger.error(f"Error converting depth/area for pothole {i}: {e}")
-                message += f"   📏 Depth: N/A | 📐 Area: N/A\n"
-
-            message += f"   📍 `{pothole.latitude:.4f}, {pothole.longitude:.4f}`\n\n"
-
-        # Rest of the method remains the same...
-        # Build keyboard
-        keyboard = []
-
-        # Severity filter buttons (first row)
-        severity_buttons = []
-        if sort_by != "all":
-            severity_buttons.append(InlineKeyboardButton("📊 Show All", callback_data=f"region:{region}:all:0"))
-        if sort_by != "low":
-            severity_buttons.append(InlineKeyboardButton("🟢 Low", callback_data=f"region:{region}:low:0"))
-        if sort_by != "medium":
-            severity_buttons.append(InlineKeyboardButton("🟡 Medium", callback_data=f"region:{region}:medium:0"))
-
-        if severity_buttons:
-            keyboard.append(severity_buttons)
-
-        # More severity buttons (second row)
-        severity_buttons2 = []
-        if sort_by != "high":
-            severity_buttons2.append(InlineKeyboardButton("🟠 High", callback_data=f"region:{region}:high:0"))
-        if sort_by != "critical":
-            severity_buttons2.append(InlineKeyboardButton("🔴 Critical", callback_data=f"region:{region}:critical:0"))
-
-        if severity_buttons2:
-            keyboard.append(severity_buttons2)
-
-        # Navigation buttons
-        if total_pages > 1:
-            nav_buttons = []
-            if page > 0:
-                nav_buttons.append(InlineKeyboardButton("⬅️ Previous",
-                                                        callback_data=f"region:{region}:{sort_by}:{page - 1}"))
-            nav_buttons.append(InlineKeyboardButton(f"{page + 1}/{total_pages}", callback_data="noop"))
-            if page < total_pages - 1:
-                nav_buttons.append(InlineKeyboardButton("Next ➡️",
-                                                        callback_data=f"region:{region}:{sort_by}:{page + 1}"))
-            keyboard.append(nav_buttons)
-
-        # Add location buttons for current page
-        for pothole in potholes[start_idx:end_idx]:
-            location_text = f"📍 View on map: {pothole.city}"
-            location_data = f"{pothole.latitude},{pothole.longitude}"
-            keyboard.append([InlineKeyboardButton(location_text, callback_data=location_data)])
-
-        # Statistics button
-        keyboard.append([InlineKeyboardButton("📊 Region Statistics", callback_data=f"stats:{region}")])
-
-        # Back button
-        keyboard.append([InlineKeyboardButton("🔙 Back to Regions", callback_data="back_to_regions")])
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit_text(message, reply_markup=reply_markup, parse_mode='Markdown')
-
-    async def show_potholes_by_severity(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Show potholes filtered by severity with pagination"""
-        query = update.callback_query
-        await query.answer()
-
-        # Parse callback data
-        data_parts = query.data.split(":")
-        severity = data_parts[1]
-        page = int(data_parts[2]) if len(data_parts) > 2 else 0
-
-        ITEMS_PER_PAGE = 5
-
-        # Get potholes based on severity
-        if severity == "all":
-            potholes = self.db.get_potholes(sort_by='severity', sort_order='DESC')
-            title = "All Potholes (sorted by severity)"
-        else:
-            potholes = self.db.get_potholes(filters={'severity': severity}, sort_by='depth', sort_order='DESC')
-            title = f"{severity.capitalize()} Severity Potholes"
-
-        if not potholes:
-            await query.message.edit_text(f"No {severity} severity potholes found.")
-            return
-
-        # Calculate pagination
-        total_pages = (len(potholes) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
-        start_idx = page * ITEMS_PER_PAGE
-        end_idx = min(start_idx + ITEMS_PER_PAGE, len(potholes))
-
-        # Build message
-        severity_emojis = {
-            'low': '🟢',
-            'medium': '🟡',
-            'high': '🟠',
-            'critical': '🔴'
-        }
-
-        message = f"*{title}*\n"
-        message += f"_Page {page + 1} of {total_pages} • Total: {len(potholes)} potholes_\n\n"
-
-        for i, p in enumerate(potholes[start_idx:end_idx], start=start_idx + 1):
-            emoji = severity_emojis.get(p.severity.value, '⚪')
-            message += f"{i}. {emoji} *{p.severity.value.upper()}* - {p.city}, {p.region}\n"
-
-            # Handle depth and area with proper type conversion
-            try:
-                if isinstance(p.depth, bytes):
-                    depth_str = p.depth.decode('utf-8', errors='ignore')
-                    depth = float(depth_str) if depth_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    depth = float(p.depth) if p.depth is not None else 0.0
-
-                # Convert depth from meters to centimeters
-                depth_cm = depth * 100
-
-                if isinstance(p.area, bytes):
-                    area_str = p.area.decode('utf-8', errors='ignore')
-                    area = float(area_str) if area_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    area = float(p.area) if p.area is not None else 0.0
-
-                message += f"   📏 Depth: {depth_cm:.1f}cm | 📐 Area: {area:.0f}px\n"
-            except (ValueError, AttributeError, UnicodeDecodeError) as e:
-                logger.error(f"Error converting depth/area for pothole {i}: {e}")
-                message += f"   📏 Depth: N/A | 📐 Area: N/A\n"
-
-            message += f"   📍 Location: `{p.latitude:.4f}, {p.longitude:.4f}`\n"
-            message += f"   🕒 {p.timestamp.strftime('%Y-%m-%d %H:%M')}\n\n"
-
-        # Build pagination keyboard
-        keyboard = []
-
-        # Navigation buttons
-        nav_buttons = []
-        if page > 0:
-            nav_buttons.append(InlineKeyboardButton("⬅️ Previous", callback_data=f"severity:{severity}:{page - 1}"))
-        if page < total_pages - 1:
-            nav_buttons.append(InlineKeyboardButton("Next ➡️", callback_data=f"severity:{severity}:{page + 1}"))
-
-        if nav_buttons:
-            keyboard.append(nav_buttons)
-
-        # Add location buttons for current page items
-        for p in potholes[start_idx:end_idx]:
-            location_text = f"📍 View on map: {p.city}"
-            location_data = f"{p.latitude},{p.longitude}"
-            keyboard.append([InlineKeyboardButton(location_text, callback_data=location_data)])
-
-        # Add back button
-        keyboard.append([InlineKeyboardButton("🔙 Back to Severity Menu", callback_data="back_to_severity")])
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit_text(message, reply_markup=reply_markup, parse_mode='Markdown')
-
-    async def show_region_stats(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Show statistics for a specific region"""
-        query = update.callback_query
-        await query.answer()
-
-        region = query.data.split(":")[1]
-
-        # Get all potholes for the region
-        potholes = self.db.get_potholes(filters={'region': region})
-
-        if not potholes:
-            await query.message.reply_text(f"No statistics available for {region}.")
-            return
-
-        # Calculate statistics
-        severity_count = {}
-        total_depth = 0
-        total_area = 0
-
-        for p in potholes:
-            severity_count[p.severity.value] = severity_count.get(p.severity.value, 0) + 1
-
-            # Handle depth conversion
-            try:
-                if isinstance(p.depth, bytes):
-                    depth_str = p.depth.decode('utf-8', errors='ignore')
-                    depth = float(depth_str) if depth_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    depth = float(p.depth) if p.depth is not None else 0.0
-                total_depth += depth
-            except:
-                pass
-
-            # Handle area conversion
-            try:
-                if isinstance(p.area, bytes):
-                    area_str = p.area.decode('utf-8', errors='ignore')
-                    area = float(area_str) if area_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    area = float(p.area) if p.area is not None else 0.0
-                total_area += area
-            except:
-                pass
-
-        avg_depth = total_depth / len(potholes)
-        avg_depth_cm = avg_depth * 100  # Convert to cm
-        avg_area = total_area / len(potholes)
-
-        # Build message
-        message = f"*📊 Statistics for {region}*\n\n"
-        message += f"Total Potholes: {len(potholes)}\n\n"
-
-        message += "*By Severity:*\n"
-        severity_emojis = {'low': '🟢', 'medium': '🟡', 'high': '🟠', 'critical': '🔴'}
-        for severity in ['critical', 'high', 'medium', 'low']:
-            if severity in severity_count:
-                emoji = severity_emojis.get(severity, '⚪')
-                count = severity_count[severity]
-                percentage = (count / len(potholes)) * 100
-                message += f"{emoji} {severity.capitalize()}: {count} ({percentage:.1f}%)\n"
-
-        message += f"\n*Average Measurements:*\n"
-        message += f"📏 Average Depth: {avg_depth_cm:.1f}cm\n"
-        message += f"📐 Average Area: {avg_area:.0f}px\n"
-
-
-
-            # Back button
-        keyboard = [[InlineKeyboardButton("🔙 Back", callback_data=f"region:{region}:all:0")]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        await query.message.edit_text(message, reply_markup=reply_markup, parse_mode='Markdown')
-
-    async def back_to_regions(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Go back to region selection"""
-        query = update.callback_query
-        await query.answer()
-
-        # Get all potholes to extract regions
+    async def display_locations(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         potholes = self.db.get_potholes()
-
         if not potholes:
-            await query.message.edit_text("No pothole locations available.")
+            await update.message.reply_text("Nema lokacija u bazi.")
             return
 
-        # Extract unique regions and count
         region_counts = {}
-        for pothole in potholes:
-            if pothole.region:
-                region_counts[pothole.region] = region_counts.get(pothole.region, 0) + 1
+        for p in potholes:
+            if p.region:
+                region_counts[p.region] = region_counts.get(p.region, 0) + 1
 
         keyboard = []
         for region in sorted(region_counts.keys()):
             count = region_counts[region]
-            button_text = f"{region} ({count} potholes)"
-            callback_data = f"region:{region}:all:0"  # Default to show all
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
+            keyboard.append([InlineKeyboardButton(
+                f"📍 {region} ({count})",
+                callback_data=f"region:{region}:all:0"
+            )])
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")])
 
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit_text(
-            "Select a region to view pothole locations:",
-            reply_markup=reply_markup
+        await update.message.reply_text(
+            "Izaberi region:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
-
-    # Add a no-op handler for non-interactive buttons
-    async def noop_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Handle non-interactive button presses"""
-        query = update.callback_query
-        await query.answer()
-
-    async def send_location(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send specific location"""
-        query = update.callback_query
-        await query.answer()
-
-        try:
-            # Check if the data matches coordinate pattern
-            if ',' not in query.data or query.data.startswith(('severity:', 'region:', 'back_')):
-                logger.warning(f"Invalid location data received: {query.data}")
-                return
-
-            latitude, longitude = map(float, query.data.split(","))
-            await query.message.reply_location(latitude=latitude, longitude=longitude)
-        except ValueError as e:
-            logger.error(f"Error parsing location: {e}, data: {query.data}")
-            await query.message.reply_text("Invalid location data.")
-
-    def run(self):
-        """Start the bot"""
-        self.application.run_polling()
 
     async def display_by_severity(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Display potholes sorted by severity"""
-        # Get statistics to show counts
         stats = self.db.get_statistics()
         severity_stats = stats.get('by_severity', {})
 
         keyboard = []
-
-        # Add buttons with counts
-        severity_emojis = {
-            'low': '🟢',
-            'medium': '🟡',
-            'high': '🟠',
-            'critical': '🔴'
-        }
-
-        for severity, emoji in severity_emojis.items():
+        for severity, emoji in SEVERITY_EMOJIS.items():
             count = severity_stats.get(severity, 0)
-            button_text = f"{emoji} {severity.capitalize()} ({count} potholes)"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=f"severity:{severity}")])
+            keyboard.append([InlineKeyboardButton(
+                f"{emoji} {severity.capitalize()} ({count})",
+                callback_data=f"severity:{severity}:0"
+            )])
+        keyboard.append([InlineKeyboardButton(
+            f"📊 Sve rupe ({stats.get('total', 0)})",
+            callback_data="severity:all:0"
+        )])
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")])
 
-        # Add "All" button with total count
-        total = stats.get('total', 0)
-        keyboard.append([InlineKeyboardButton(f"📊 All Potholes ({total})", callback_data="severity:all")])
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
-            "*🚨 View Potholes by Severity Level*\n\n"
-            "Select a severity level to view detailed information:",
-            reply_markup=reply_markup,
-            parse_mode='Markdown'
-        )
-
-    async def show_potholes_by_severity(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Show potholes filtered by severity with pagination"""
-        query = update.callback_query
-        await query.answer()
-
-        # Parse callback data
-        data_parts = query.data.split(":")
-        severity = data_parts[1]
-        page = int(data_parts[2]) if len(data_parts) > 2 else 0
-
-        ITEMS_PER_PAGE = 5
-
-        # Get potholes based on severity
-        if severity == "all":
-            potholes = self.db.get_potholes(sort_by='severity', sort_order='DESC')
-            title = "All Potholes (sorted by severity)"
-        else:
-            potholes = self.db.get_potholes(filters={'severity': severity}, sort_by='depth', sort_order='DESC')
-            title = f"{severity.capitalize()} Severity Potholes"
-
-        if not potholes:
-            await query.message.edit_text(f"No {severity} severity potholes found.")
-            return
-
-        # Calculate pagination
-        total_pages = (len(potholes) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
-        start_idx = page * ITEMS_PER_PAGE
-        end_idx = min(start_idx + ITEMS_PER_PAGE, len(potholes))
-
-        # Build message
-        severity_emojis = {
-            'low': '🟢',
-            'medium': '🟡',
-            'high': '🟠',
-            'critical': '🔴'
-        }
-
-        message = f"*{title}*\n"
-        message += f"_Page {page + 1} of {total_pages} • Total: {len(potholes)} potholes_\n\n"
-
-        for i, p in enumerate(potholes[start_idx:end_idx], start=start_idx + 1):
-            emoji = severity_emojis.get(p.severity.value, '⚪')
-            message += f"{i}. {emoji} *{p.severity.value.upper()}* - {p.city}, {p.region}\n"
-
-            # Handle depth and area with proper type conversion
-            try:
-                if isinstance(p.depth, bytes):
-                    depth_str = p.depth.decode('utf-8', errors='ignore')
-                    depth = float(depth_str) if depth_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    depth = float(p.depth) if p.depth is not None else 0.0
-
-                if isinstance(p.area, bytes):
-                    area_str = p.area.decode('utf-8', errors='ignore')
-                    area = float(area_str) if area_str.replace('.', '').replace('-', '').isdigit() else 0.0
-                else:
-                    area = float(p.area) if p.area is not None else 0.0
-
-                message += f"   📏 Depth: {depth:.3f}m | 📐 Area: {area:.0f}px\n"
-            except (ValueError, AttributeError, UnicodeDecodeError) as e:
-                logger.error(f"Error converting depth/area for pothole {i}: {e}")
-                message += f"   📏 Depth: N/A | 📐 Area: N/A\n"
-
-            message += f"   📍 Location: `{p.latitude:.4f}, {p.longitude:.4f}`\n"
-            message += f"   🕒 {p.timestamp.strftime('%Y-%m-%d %H:%M')}\n\n"
-
-        # Build pagination keyboard (rest remains the same)
-        keyboard = []
-
-        # Navigation buttons
-        nav_buttons = []
-        if page > 0:
-            nav_buttons.append(InlineKeyboardButton("⬅️ Previous", callback_data=f"severity:{severity}:{page - 1}"))
-        if page < total_pages - 1:
-            nav_buttons.append(InlineKeyboardButton("Next ➡️", callback_data=f"severity:{severity}:{page + 1}"))
-
-        if nav_buttons:
-            keyboard.append(nav_buttons)
-
-        # Add location buttons for current page items
-        for p in potholes[start_idx:end_idx]:
-            location_text = f"📍 View on map: {p.city}"
-            location_data = f"{p.latitude},{p.longitude}"
-            keyboard.append([InlineKeyboardButton(location_text, callback_data=location_data)])
-
-        # Add back button
-        keyboard.append([InlineKeyboardButton("🔙 Back to Severity Menu", callback_data="back_to_severity")])
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit_text(message, reply_markup=reply_markup, parse_mode='Markdown')
-
-    async def back_to_severity_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Go back to severity selection menu"""
-        query = update.callback_query
-        await query.answer()
-
-        # Reuse the display_by_severity logic
-        stats = self.db.get_statistics()
-        severity_stats = stats.get('by_severity', {})
-
-        keyboard = []
-        severity_emojis = {
-            'low': '🟢',
-            'medium': '🟡',
-            'high': '🟠',
-            'critical': '🔴'
-        }
-
-        for severity, emoji in severity_emojis.items():
-            count = severity_stats.get(severity, 0)
-            button_text = f"{emoji} {severity.capitalize()} ({count} potholes)"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=f"severity:{severity}")])
-
-        total = stats.get('total', 0)
-        keyboard.append([InlineKeyboardButton(f"📊 All Potholes ({total})", callback_data="severity:all")])
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit_text(
-            "*🚨 View Potholes by Severity Level*\n\n"
-            "Select a severity level to view detailed information:",
-            reply_markup=reply_markup,
-            parse_mode='Markdown'
+            "*🚨 Rupe po težini:*\n\nIzaberi nivo:",
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
     async def export_csv(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        import os
-
         potholes = self.db.get_potholes()
         if not potholes:
-            await update.message.reply_text("No data to export.")
+            await update.message.reply_text("Nema podataka za export.")
             return
 
-        # Convert to DataFrame
         data = [p.to_dict() for p in potholes]
         df = pd.DataFrame(data)
 
-        # Create CSV file
         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"potholes_export_{timestamp}.csv"
+        filename = f"rupe_export_{timestamp}.csv"
         filepath = os.path.join(config.EXPORT_DIR, filename)
-
         df.to_csv(filepath, index=False)
 
-        # Send file
         with open(filepath, 'rb') as f:
             await update.message.reply_document(
                 document=f,
                 filename=filename,
-                caption=f"Pothole data export\nTotal records: {len(df)}"
-
+                caption=f"📥 Export podataka\nUkupno zapisa: {len(df)}"
             )
 
+    # ------------------------------------------------------------------ #
+    # Callback handleri — glavni meni                                      #
+    # ------------------------------------------------------------------ #
+
+    async def _handle_cmd_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Jedan handler za sva dugmad iz glavnog menija."""
+        query = update.callback_query
+        await query.answer()
+        cmd = query.data.split(":")[1]
+
+        # Kreiramo fake update sa message-om da mozemo da pozovemo iste handlere
+        if cmd == "locations":
+            await self._edit_or_reply_locations(query)
+        elif cmd == "severity":
+            await self._edit_or_reply_severity(query)
+        elif cmd == "map":
+            await self._edit_or_reply_map(query)
+        elif cmd == "stats":
+            await self._edit_or_reply_stats(query)
+        elif cmd == "latest":
+            await self._edit_or_reply_latest(query)
+        elif cmd == "status":
+            await self._edit_or_reply_status(query)
+        elif cmd == "export":
+            await self._do_export(query)
+        elif cmd == "menu":
+            stats = self.db.get_statistics()
+            user = query.from_user
+            role = self.db.get_user_role(user.id) or 'viewer'
+            role_text = "👑 Admin" if role == 'admin' else "👤 Viewer"
+            message = (
+                f"*🚗 Sistem za detekciju rupa na putu*\n\n"
+                f"Dobrodošao, *{user.first_name}*! {role_text}\n\n"
+                f"📊 Trenutno u bazi:\n"
+                f"• Ukupno rupa: *{stats['total']}*\n"
+                f"• Danas detektovano: *{stats.get('today', 0)}*\n"
+                f"• 🔴 Kritičnih: *{stats['by_severity'].get('critical', 0)}*\n\n"
+                f"Izaberi akciju:"
+            )
+            await query.message.edit_text(
+                message,
+                parse_mode='Markdown',
+                reply_markup=self._main_keyboard()
+            )
+
+    async def _edit_or_reply_locations(self, query):
+        potholes = self.db.get_potholes()
+        if not potholes:
+            await query.message.edit_text("Nema lokacija u bazi.")
+            return
+
+        region_counts = {}
+        for p in potholes:
+            if p.region:
+                region_counts[p.region] = region_counts.get(p.region, 0) + 1
+
+        keyboard = []
+        for region in sorted(region_counts.keys()):
+            keyboard.append([InlineKeyboardButton(
+                f"📍 {region} ({region_counts[region]})",
+                callback_data=f"region:{region}:all:0"
+            )])
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")])
+        await query.message.edit_text(
+            "Izaberi region:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    async def _edit_or_reply_severity(self, query):
+        stats = self.db.get_statistics()
+        severity_stats = stats.get('by_severity', {})
+        keyboard = []
+        for severity, emoji in SEVERITY_EMOJIS.items():
+            count = severity_stats.get(severity, 0)
+            keyboard.append([InlineKeyboardButton(
+                f"{emoji} {severity.capitalize()} ({count})",
+                callback_data=f"severity:{severity}:0"
+            )])
+        keyboard.append([InlineKeyboardButton(
+            f"📊 Sve ({stats.get('total', 0)})",
+            callback_data="severity:all:0"
+        )])
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")])
+        await query.message.edit_text(
+            "*🚨 Rupe po težini:*\n\nIzaberi nivo:",
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    async def _edit_or_reply_map(self, query):
+        potholes = self.db.get_potholes()
+        if not potholes:
+            await query.message.edit_text("Nema lokacija u bazi.")
+            return
+        locations = [f"{p.latitude},{p.longitude}" for p in potholes]
+        destination = locations[0]
+        waypoints = "|".join(locations[1:20])
+        url = f"https://www.google.com/maps/dir/?api=1&destination={destination}"
+        if waypoints:
+            url += f"&waypoints={urllib.parse.quote(waypoints)}"
+        await query.message.edit_text(
+            f"🗺️ *Mapa rupa*\n\nLokacija: {min(len(potholes), 20)} od {len(potholes)}\n[Otvori Google Maps]({url})",
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")]])
+        )
+
+    async def _edit_or_reply_stats(self, query):
+        stats = self.db.get_statistics()
+        total = stats['total']
+        message = (
+            f"*📊 Statistike*\n\n"
+            f"Ukupno: *{total}*\n"
+            f"Danas: *{stats.get('today', 0)}*\n\n"
+            f"*Po težini:*\n"
+        )
+        for severity, emoji in SEVERITY_EMOJIS.items():
+            count = stats['by_severity'].get(severity, 0)
+            pct = (count / total * 100) if total > 0 else 0
+            message += f"{emoji} {severity.capitalize()}: {count} ({pct:.0f}%)\n"
+        if stats['top_regions']:
+            message += "\n*Top regioni:*\n"
+            for region, count in stats['top_regions'][:5]:
+                message += f"• {region}: {count}\n"
+        await query.message.edit_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")]])
+        )
+
+    async def _edit_or_reply_latest(self, query):
+        potholes = self.db.get_latest_potholes(limit=5)
+        if not potholes:
+            await query.message.edit_text("Nema detektovanih rupa.")
+            return
+        message = "*🕒 Poslednjih 5 rupa:*\n\n"
+        keyboard = []
+        for i, p in enumerate(potholes, 1):
+            emoji = SEVERITY_EMOJIS.get(p.severity.value, '⚪')
+            depth_cm = self._safe_float(p.depth) * 100
+            message += (
+                f"{i}. {emoji} *{p.severity.value.upper()}* — {p.city}\n"
+                f"   📏 {depth_cm:.1f}cm | {p.timestamp.strftime('%d.%m %H:%M')}\n\n"
+            )
+            row = [InlineKeyboardButton(f"📍 {p.city}", callback_data=f"loc:{p.latitude},{p.longitude}")]
+            if p.image_path and os.path.exists(p.image_path):
+                row.append(InlineKeyboardButton("📸 Slika", callback_data=f"image:{p.id}"))
+            keyboard.append(row)
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")])
+        await query.message.edit_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    async def _edit_or_reply_status(self, query):
+        stats = self.db.get_statistics()
+        user_counts = self.db.get_user_count()
+        message = (
+            f"*📡 Status sistema*\n\n"
+            f"🟢 Bot: Aktivan\n"
+            f"🗄️ Baza: {stats['total']} rupa\n"
+            f"📅 Danas: {stats.get('today', 0)} novih\n\n"
+            f"*Korisnici:*\n"
+            f"👑 Admini: {user_counts.get('admin', 0)}\n"
+            f"👤 Vieweri: {user_counts.get('viewer', 0)}\n\n"
+            f"*Po težini:*\n"
+        )
+        for severity, emoji in SEVERITY_EMOJIS.items():
+            message += f"{emoji} {severity.capitalize()}: {stats['by_severity'].get(severity, 0)}\n"
+        await query.message.edit_text(
+            message,
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Nazad", callback_data="cmd:menu")]])
+        )
+
+    async def _do_export(self, query):
+        potholes = self.db.get_potholes()
+        if not potholes:
+            await query.answer("Nema podataka za export.", show_alert=True)
+            return
+        data = [p.to_dict() for p in potholes]
+        df = pd.DataFrame(data)
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"rupe_export_{timestamp}.csv"
+        filepath = os.path.join(config.EXPORT_DIR, filename)
+        df.to_csv(filepath, index=False)
+        with open(filepath, 'rb') as f:
+            await query.message.reply_document(
+                document=f,
+                filename=filename,
+                caption=f"📥 Export podataka\nUkupno zapisa: {len(df)}"
+            )
+
+    # ------------------------------------------------------------------ #
+    # Callback handleri — regioni                                          #
+    # ------------------------------------------------------------------ #
+
+    async def show_locations_in_region(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+
+        parts = query.data.split(":")
+        region = parts[1]
+        sort_by = parts[2] if len(parts) > 2 else "all"
+        page = int(parts[3]) if len(parts) > 3 else 0
+        ITEMS_PER_PAGE = 5
+
+        filters = {'region': region}
+        if sort_by != "all":
+            filters['severity'] = sort_by
+
+        potholes = self.db.get_potholes(filters=filters, sort_by='depth', sort_order='DESC')
+
+        if not potholes:
+            await query.message.edit_text(f"Nema rupa u regionu {region}.")
+            return
+
+        total_pages = (len(potholes) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
+        start_idx = page * ITEMS_PER_PAGE
+        end_idx = min(start_idx + ITEMS_PER_PAGE, len(potholes))
+
+        title = f"*📍 {region}*"
+        if sort_by != "all":
+            title += f" — {sort_by.capitalize()}"
+        message = f"{title}\n_Strana {page+1}/{total_pages} • Ukupno: {len(potholes)}_\n\n"
+
+        for i, p in enumerate(potholes[start_idx:end_idx], start=start_idx + 1):
+            emoji = SEVERITY_EMOJIS.get(p.severity.value, '⚪')
+            depth_cm = self._safe_float(p.depth) * 100
+            area = self._safe_float(p.area)
+            message += (
+                f"{i}. {emoji} *{p.city}*\n"
+                f"   Težina: {p.severity.value.capitalize()} | "
+                f"📏 {depth_cm:.1f}cm | 📐 {area:.0f}px\n"
+                f"   `{p.latitude:.4f}, {p.longitude:.4f}`\n\n"
+            )
+
+        keyboard = []
+
+        # Filter dugmad
+        filter_row = []
+        for sev, emoji in SEVERITY_EMOJIS.items():
+            if sort_by != sev:
+                filter_row.append(InlineKeyboardButton(emoji, callback_data=f"region:{region}:{sev}:0"))
+        if sort_by != "all":
+            filter_row.insert(0, InlineKeyboardButton("📊 Sve", callback_data=f"region:{region}:all:0"))
+        if filter_row:
+            keyboard.append(filter_row)
+
+        # Paginacija
+        if total_pages > 1:
+            nav = []
+            if page > 0:
+                nav.append(InlineKeyboardButton("⬅️", callback_data=f"region:{region}:{sort_by}:{page-1}"))
+            nav.append(InlineKeyboardButton(f"{page+1}/{total_pages}", callback_data="noop"))
+            if page < total_pages - 1:
+                nav.append(InlineKeyboardButton("➡️", callback_data=f"region:{region}:{sort_by}:{page+1}"))
+            keyboard.append(nav)
+
+        # Lokacije i slike
+        for p in potholes[start_idx:end_idx]:
+            row = [InlineKeyboardButton(f"📍 {p.city}", callback_data=f"loc:{p.latitude},{p.longitude}")]
+            if p.image_path and os.path.exists(p.image_path):
+                row.append(InlineKeyboardButton("📸", callback_data=f"image:{p.id}"))
+            keyboard.append(row)
+
+        keyboard.append([InlineKeyboardButton("📊 Statistike regiona", callback_data=f"stats:{region}")])
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="back_to_regions")])
+
+        await query.message.edit_text(
+            message, parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    async def show_region_stats(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+
+        region = query.data.split(":")[1]
+        potholes = self.db.get_potholes(filters={'region': region})
+
+        if not potholes:
+            await query.message.edit_text(f"Nema statistika za {region}.")
+            return
+
+        severity_count = {}
+        total_depth = total_area = 0.0
+        for p in potholes:
+            severity_count[p.severity.value] = severity_count.get(p.severity.value, 0) + 1
+            total_depth += self._safe_float(p.depth)
+            total_area += self._safe_float(p.area)
+
+        avg_depth_cm = (total_depth / len(potholes)) * 100
+        avg_area = total_area / len(potholes)
+
+        message = f"*📊 Statistike — {region}*\n\nUkupno: {len(potholes)}\n\n*Po težini:*\n"
+        for severity in ['critical', 'high', 'medium', 'low']:
+            if severity in severity_count:
+                emoji = SEVERITY_EMOJIS.get(severity, '⚪')
+                count = severity_count[severity]
+                pct = count / len(potholes) * 100
+                message += f"{emoji} {severity.capitalize()}: {count} ({pct:.0f}%)\n"
+
+        message += f"\n📏 Prosečna dubina: {avg_depth_cm:.1f}cm\n📐 Prosečna površina: {avg_area:.0f}px"
+
+        await query.message.edit_text(
+            message, parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton("🔙 Nazad", callback_data=f"region:{region}:all:0")
+            ]])
+        )
+
+    async def back_to_regions(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+        await self._edit_or_reply_locations(query)
+
+    # ------------------------------------------------------------------ #
+    # Callback handleri — severity                                         #
+    # ------------------------------------------------------------------ #
+
+    async def show_potholes_by_severity(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+
+        parts = query.data.split(":")
+        severity = parts[1]
+        page = int(parts[2]) if len(parts) > 2 else 0
+        ITEMS_PER_PAGE = 5
+
+        if severity == "all":
+            potholes = self.db.get_potholes(sort_by='severity', sort_order='DESC')
+            title = "Sve rupe (po težini)"
+        else:
+            potholes = self.db.get_potholes(filters={'severity': severity}, sort_by='depth', sort_order='DESC')
+            emoji = SEVERITY_EMOJIS.get(severity, '')
+            title = f"{emoji} {severity.capitalize()} rupe"
+
+        if not potholes:
+            await query.message.edit_text(f"Nema rupa za izabrani nivo.")
+            return
+
+        total_pages = (len(potholes) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
+        start_idx = page * ITEMS_PER_PAGE
+        end_idx = min(start_idx + ITEMS_PER_PAGE, len(potholes))
+
+        message = f"*{title}*\n_Strana {page+1}/{total_pages} • Ukupno: {len(potholes)}_\n\n"
+
+        for i, p in enumerate(potholes[start_idx:end_idx], start=start_idx + 1):
+            emoji = SEVERITY_EMOJIS.get(p.severity.value, '⚪')
+            depth_cm = self._safe_float(p.depth) * 100
+            message += (
+                f"{i}. {emoji} *{p.severity.value.upper()}* — {p.city}, {p.region}\n"
+                f"   📏 {depth_cm:.1f}cm | {p.timestamp.strftime('%d.%m %H:%M')}\n\n"
+            )
+
+        keyboard = []
+
+        nav = []
+        if page > 0:
+            nav.append(InlineKeyboardButton("⬅️", callback_data=f"severity:{severity}:{page-1}"))
+        if page < total_pages - 1:
+            nav.append(InlineKeyboardButton("➡️", callback_data=f"severity:{severity}:{page+1}"))
+        if nav:
+            keyboard.append(nav)
+
+        for p in potholes[start_idx:end_idx]:
+            row = [InlineKeyboardButton(f"📍 {p.city}", callback_data=f"loc:{p.latitude},{p.longitude}")]
+            if p.image_path and os.path.exists(p.image_path):
+                row.append(InlineKeyboardButton("📸", callback_data=f"image:{p.id}"))
+            keyboard.append(row)
+
+        keyboard.append([InlineKeyboardButton("🔙 Nazad", callback_data="back_to_severity")])
+        await query.message.edit_text(
+            message, parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    async def back_to_severity_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+        await self._edit_or_reply_severity(query)
+
+    # ------------------------------------------------------------------ #
+    # Callback handleri — slike i lokacije                                 #
+    # ------------------------------------------------------------------ #
+
+    async def send_pothole_image(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+
+        pothole_id = int(query.data.split(":")[1])
+        potholes = self.db.get_potholes()
+        pothole = next((p for p in potholes if p.id == pothole_id), None)
+
+        if not pothole or not pothole.image_path or not os.path.exists(pothole.image_path):
+            await query.answer("Slika nije dostupna.", show_alert=True)
+            return
+
+        emoji = SEVERITY_EMOJIS.get(pothole.severity.value, '⚪')
+        with open(pothole.image_path, 'rb') as img:
+            await query.message.reply_photo(
+                photo=img,
+                caption=f"{emoji} *{pothole.severity.value.upper()}* — {pothole.city}, {pothole.region}\n"
+                        f"📏 Dubina: {self._safe_float(pothole.depth)*100:.1f}cm\n"
+                        f"🕒 {pothole.timestamp.strftime('%d.%m.%Y %H:%M')}",
+                parse_mode='Markdown'
+            )
+
+    async def send_location(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        query = update.callback_query
+        await query.answer()
+        try:
+            coords = query.data.replace("loc:", "")
+            latitude, longitude = map(float, coords.split(","))
+            await query.message.reply_location(latitude=latitude, longitude=longitude)
+        except Exception as e:
+            logger.error(f"Greška pri parsiranju lokacije: {e}")
+            await query.answer("Greška pri učitavanju lokacije.", show_alert=True)
+
+    async def noop_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        await update.callback_query.answer()
+
+    # ------------------------------------------------------------------ #
+    # Help                                                                 #
+    # ------------------------------------------------------------------ #
+
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send detailed help message"""
-        help_text = """
-    *🚗 Pothole Detection Bot - Help Guide 🚗*
-
-    This bot helps you track and monitor detected potholes in your area.
-
-    *📋 Available Commands:*
-
-    /start - Welcome message and quick overview
-    /help - Show this detailed help guide
-    /locations - Browse potholes by region with interactive menu
-    /severity - View potholes filtered by severity level
-    /map - Get a Google Maps link with all pothole locations
-    /stats - View detection statistics and summary
-    /export - Export all pothole data as CSV file
-
-    *🎯 How to Use:*
-
-    1️⃣ *Browse by Location:*
-       • Use /locations to see regions with potholes
-       • Select a region to view specific locations
-       • Tap on a location to see it on the map
-
-    2️⃣ *Filter by Severity:*
-       • Use /severity to filter by severity level
-       • 🟢 Low - Minor surface damage
-       • 🟡 Medium - Moderate depth
-       • 🟠 High - Significant hazard
-       • 🔴 Critical - Severe road damage
-
-    3️⃣ *View on Map:*
-       • Use /map for a comprehensive map view
-       • Opens in Google Maps with all locations
-       • Plan routes avoiding problem areas
-
-    4️⃣ *Export Data:*
-       • Use /export to download CSV file
-       • Contains all pothole information
-       • Useful for reports and analysis
-
-    *📊 Understanding the Data:*
-
-    • *Depth*: Measured depth of pothole in meters
-    • *Area*: Size of detected pothole in pixels
-    • *Confidence*: Detection accuracy (0-100%)
-    • *Timestamp*: When the pothole was detected
-
-    *🔔 Tips:*
-    • Potholes within 10m are considered duplicates
-    • Data is updated in real-time from video feed
-    • GPS coordinates are included when available
-
-    *❓ Questions or Issues?*
-    Contact the system administrator for support.
-
-    Stay safe on the roads! 🛣️
-    """
-
-        await update.message.reply_text(help_text, parse_mode='Markdown')
-
-    # Alternative: Shorter help command with inline keyboard for topics
-    async def help_command_interactive(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send interactive help menu"""
         keyboard = [
-            [InlineKeyboardButton("📍 Navigation Commands", callback_data="help:navigation")],
-            [InlineKeyboardButton("📊 Data & Statistics", callback_data="help:data")],
-            [InlineKeyboardButton("🎯 Using Filters", callback_data="help:filters")],
-            [InlineKeyboardButton("💡 Tips & Tricks", callback_data="help:tips")],
-            [InlineKeyboardButton("❓ FAQ", callback_data="help:faq")]
+            [InlineKeyboardButton("📍 Navigacija", callback_data="help:navigation")],
+            [InlineKeyboardButton("📊 Podaci i statistike", callback_data="help:data")],
+            [InlineKeyboardButton("🎯 Filteri", callback_data="help:filters")],
+            [InlineKeyboardButton("🔔 Notifikacije", callback_data="help:notifications")],
+            [InlineKeyboardButton("❓ FAQ", callback_data="help:faq")],
         ]
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        help_text = """
-    *🚗 Pothole Detection Bot - Help Center 🚗*
-
-    Welcome to the help center! Select a topic below to learn more:
-
-    • *Navigation* - Learn about location and map commands
-    • *Data & Statistics* - Understanding pothole data
-    • *Filters* - How to filter by severity and region
-    • *Tips* - Best practices and useful features
-    • *FAQ* - Frequently asked questions
-
-    Or use /start to see all available commands.
-    """
-
         await update.message.reply_text(
-            help_text,
-            reply_markup=reply_markup,
-            parse_mode='Markdown'
+            "*❓ Centar za pomoć*\n\nIzaberi temu:",
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
     async def help_topic_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Handle help topic selection"""
         query = update.callback_query
         await query.answer()
-
         topic = query.data.split(":")[1]
 
-        help_topics = {
-            "navigation": """
-    *📍 Navigation Commands*
-
-    • /locations - Browse potholes by region
-      - Shows all regions with pothole counts
-      - Select a region to see specific locations
-      - Tap locations to view on map
-
-    • /map - View all potholes on Google Maps
-      - Opens comprehensive map view
-      - Shows all detected locations
-      - Useful for route planning
-
-    • Individual Locations:
-      - Each location shows coordinates
-      - Tap to open in Telegram's map view
-      - Share locations with others
-    """,
-            "data": """
-    *📊 Data & Statistics*
-
-    • /stats - View summary statistics
-      - Total potholes detected
-      - Breakdown by severity
-      - Top affected regions
-
-    • /export - Export data as CSV
-      - Downloads complete dataset
-      - Includes all pothole details
-      - Perfect for reports/analysis
-
-    • Data Fields:
-      - Location (GPS coordinates)
-      - Severity level
-      - Depth in meters
-      - Detection confidence
-      - Timestamp
-    """,
-            "filters": """
-    *🎯 Using Filters*
-
-    • /severity - Filter by severity level
-      - 🟢 Low: Minor damage (< 2cm)
-      - 🟡 Medium: Moderate (2-5cm)
-      - 🟠 High: Significant (5-10cm)
-      - 🔴 Critical: Severe (> 10cm)
-
-    • Regional Filtering:
-      - Use /locations to filter by region
-      - See counts per region
-      - Focus on specific areas
-
-    • Sorting:
-      - Potholes sorted by severity
-      - Most recent detections first
-      - Deepest potholes prioritized
-    """,
-            "tips": """
-    *💡 Tips & Tricks*
-
-    • Duplicate Prevention:
-      - Potholes within 10m are merged
-      - Prevents duplicate reports
-      - Ensures accurate counts
-
-    • Real-time Updates:
-      - Data updates continuously
-      - New detections added instantly
-      - Check /stats for latest counts
-
-    • Best Practices:
-      - Export data regularly
-      - Monitor high-severity areas
-      - Share locations with authorities
-      - Plan routes using /map
-    """,
-            "faq": """
-    *❓ Frequently Asked Questions*
-
-    *Q: How accurate is the detection?*
-    A: Detection confidence is shown for each pothole. Higher confidence = more accurate.
-
-    *Q: Why are some potholes missing?*
-    A: Detection depends on video quality and GPS signal. Some may be filtered as duplicates.
-
-    *Q: Can I report potholes manually?*
-    A: This bot only shows automatically detected potholes from the video feed.
-
-    *Q: How often is data updated?*
-    A: Data updates in real-time as the detection system processes video footage.
-
-    *Q: What does "Unknown" location mean?*
-    A: GPS data was unavailable when the pothole was detected.
-    """
+        topics = {
+            "navigation": (
+                "*📍 Navigacija*\n\n"
+                "• *Lokacije* — pregled rupa po regionu\n"
+                "• *Mapa* — Google Maps link sa svim rupama\n"
+                "• *Najnovije* — poslednjih 5 detektovanih\n"
+                "• Dugme 📍 otvara pin na mapi\n"
+                "• Dugme 📸 prikazuje sliku detekcije"
+            ),
+            "data": (
+                "*📊 Podaci i statistike*\n\n"
+                "• *Statistike* — ukupan pregled po težini i regionima\n"
+                "• *Status* — stanje sistema i broj korisnika\n"
+                "• *Export CSV* — preuzmi sve podatke\n"
+                "• Polja: lokacija, težina, dubina, površina, vreme"
+            ),
+            "filters": (
+                "*🎯 Filteri*\n\n"
+                "• *Po težini* — filtriraj po nivou ozbiljnosti\n"
+                f"  {SEVERITY_EMOJIS['low']} Low | {SEVERITY_EMOJIS['medium']} Medium | "
+                f"{SEVERITY_EMOJIS['high']} High | {SEVERITY_EMOJIS['critical']} Critical\n"
+                "• *Lokacije* → region → filter po težini unutar regiona\n"
+                "• Paginacija po 5 rupa po strani"
+            ),
+            "notifications": (
+                "*🔔 Notifikacije*\n\n"
+                "• Admini automatski dobijaju poruku kad se detektuje\n"
+                f"  {SEVERITY_EMOJIS['high']} HIGH ili {SEVERITY_EMOJIS['critical']} CRITICAL rupa\n"
+                "• Notifikacija sadrži lokaciju, dubinu i sliku\n"
+                "• Vieweri ne dobijaju notifikacije\n"
+                "• Admin status se dodeljuje pri registraciji na osnovu chat ID-a"
+            ),
+            "faq": (
+                "*❓ Česta pitanja*\n\n"
+                "*Q: Kako postati admin?*\n"
+                "A: Admin je unapred definisan u sistemu.\n\n"
+                "*Q: Zašto neke rupe nemaju sliku?*\n"
+                "A: Slika se čuva samo kad je detekcija uspešna.\n\n"
+                "*Q: Kolika je tačnost detekcije?*\n"
+                "A: Confidence score je prikazan po rupi u exportu.\n\n"
+                "*Q: Šta znači 'Unknown' lokacija?*\n"
+                "A: GPS signal nije bio dostupan u tom trenutku."
+            ),
         }
 
-        message = help_topics.get(topic, "Topic not found.")
-
-        # Add back button
-        keyboard = [[InlineKeyboardButton("🔙 Back to Help Menu", callback_data="help:menu")]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
+        message = topics.get(topic, "Tema nije pronađena.")
         await query.message.edit_text(
-            message,
-            reply_markup=reply_markup,
-            parse_mode='Markdown'
+            message, parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton("🔙 Nazad", callback_data="help:menu")
+            ]])
         )
 
     async def help_menu_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Return to main help menu"""
         query = update.callback_query
         await query.answer()
-
         keyboard = [
-            [InlineKeyboardButton("📍 Navigation Commands", callback_data="help:navigation")],
-            [InlineKeyboardButton("📊 Data & Statistics", callback_data="help:data")],
-            [InlineKeyboardButton("🎯 Using Filters", callback_data="help:filters")],
-            [InlineKeyboardButton("💡 Tips & Tricks", callback_data="help:tips")],
-            [InlineKeyboardButton("❓ FAQ", callback_data="help:faq")]
+            [InlineKeyboardButton("📍 Navigacija", callback_data="help:navigation")],
+            [InlineKeyboardButton("📊 Podaci i statistike", callback_data="help:data")],
+            [InlineKeyboardButton("🎯 Filteri", callback_data="help:filters")],
+            [InlineKeyboardButton("🔔 Notifikacije", callback_data="help:notifications")],
+            [InlineKeyboardButton("❓ FAQ", callback_data="help:faq")],
+            [InlineKeyboardButton("🔙 Glavni meni", callback_data="cmd:menu")],
         ]
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        help_text = """
-    *🚗 Pothole Detection Bot - Help Center 🚗*
-
-    Welcome to the help center! Select a topic below to learn more:
-
-    • *Navigation* - Learn about location and map commands
-    • *Data & Statistics* - Understanding pothole data
-    • *Filters* - How to filter by severity and region
-    • *Tips* - Best practices and useful features
-    • *FAQ* - Frequently asked questions
-
-    Or use /start to see all available commands.
-    """
-
         await query.message.edit_text(
-            help_text,
-            reply_markup=reply_markup,
-            parse_mode='Markdown'
+            "*❓ Centar za pomoć*\n\nIzaberi temu:",
+            parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
+
+    # ------------------------------------------------------------------ #
+    # Run                                                                  #
+    # ------------------------------------------------------------------ #
+
+    def setup_cmd_handler(self):
+        """Registruje handler za cmd: callbacks — poziva se posle setup_handlers."""
+        self.application.add_handler(CallbackQueryHandler(self._handle_cmd_callback, pattern='^cmd:'))
+
+    def run(self):
+        self.setup_cmd_handler()
+        self.application.run_polling()

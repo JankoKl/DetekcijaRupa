@@ -1,10 +1,16 @@
-#  Pothole Detection System with Telegram & APM Integration
+# 🚗 Pothole Detection System
 
-## Overview
-
-The Pothole Detection System is a real-time Python-based application that uses computer vision and GPS data to automatically detect potholes in road surfaces. It uses YOLOv8 for object detection, MiDaS for depth estimation, and integrates with a Telegram bot for real-time notifications. It includes full Application Performance Monitoring (APM) using Prometheus and Grafana, as well as Dockerized deployment via Docker Hub.
+A real-time computer vision system that automatically detects and maps road potholes from a moving vehicle. Mounted camera feeds into a YOLO + MiDaS pipeline that classifies severity, records GPS location, and pushes live alerts to a Telegram bot.
 
 ![Demonstration gif](https://github.com/user-attachments/assets/2c675218-1e69-4023-a27a-ad3767bbf9e1)
+
+---
+
+## 📱 Try the Telegram Bot
+
+**No installation needed** — just open the bot and start exploring detected potholes:
+
+👉 **[Open Bot on Telegram](https://t.me/potholedetectionBOT)**
 
 ---
 
@@ -12,140 +18,71 @@ The Pothole Detection System is a real-time Python-based application that uses c
 
 - Real-time pothole detection (YOLOv8)
 - MiDaS-based depth estimation
-- Live input from video camera or from video file
-- SQLite database for local storage
-- Stores images of detected potholes
-- Telegram bot for real-time updates and interaction
+- Severity classification (Low / Medium / High / Critical)
+- GPS location tagging (real or simulated)
 - Duplicate detection prevention
+- Detection images saved per pothole
 - Offline mode with automatic resync
-- GPS integration (real or simulated)
-- Dockerized app with Docker Hub support
-- Exposes Prometheus metrics for monitoring
-- Grafana dashboard to visualize performance metrics
+- Telegram bot with interactive menus and role-based access
+- Admin real-time alerts for HIGH and CRITICAL potholes
+- Prometheus metrics + Grafana dashboard
+- Dockerized with CI/CD via GitHub Actions → Docker Hub
 
 ---
 
-##  System Architecture
+## 📱 Telegram Bot
 
-![Diagram.](imgs/Dijagram.png "Diagram.")
+The bot provides a full interactive interface — no commands to memorize, everything is accessible through inline buttons.
 
----
+| Command | Description |
+|---|---|
+| `/start` | Main menu with all options |
+| `/locations` | Browse potholes by region |
+| `/severity` | Filter by severity level |
+| `/map` | View all locations on Google Maps |
+| `/latest` | Last 5 detected potholes with photos |
+| `/stats` | Statistics by severity and region |
+| `/status` | System status and user count |
+| `/export` | Download all data as CSV |
+| `/help` | Help center |
 
-##  Configuration
-
-Configuration is handled via a `.env` file in the project root. Example:
-
-```env
-USE_SIMULATION=True
-GPS_PORT=COM10
-GPS_BAUDRATE=9600
-USE_LIVE_CAMERA=False  
-CAMERA_INDEX=0
-VIDEO_FILE=p.mp4
-VIDEO_WIDTH=1020
-VIDEO_HEIGHT=500
-FRAME_SKIP=3
-SAVE_VIDEO=False
-VIDEO_OUTPUT_PATH=output/demo_output.avi
-VIDEO_FPS=20
-DUPLICATE_RADIUS_METERS=5.0
-TELEGRAM_TOKEN=your_bot_token
-TELEGRAM_CHAT_ID=your_chat_id
-```
-
-Make sure to create your own `.env` file or duplicate `.env.example` and update values as needed.
+![Telegram bot screenshot](imgs/photo_2025-06-12_00-26-59.jpg)
 
 ---
 
-##  How to Run
+## System Architecture
 
-###  Run Locally 
+![Diagram](imgs/Dijagram.png "System Architecture Diagram")
 
-Install dependencies:
+Three parallel threads run simultaneously:
 
-```bash
-pip install -r requirements.txt
-```
-
-Start the app:
-
-```bash
-python app/main.py
-```
-
-Metrics will be available at: `http://localhost:8000/metrics`
-
-> **Note:** You must have a `.env` file configured correctly before running.
-
----
-
-### Run from Docker Hub 
-
-> Requires [Docker](https://www.docker.com/products/docker-desktop)
-
-```bash
-docker run -p 8000:8000 --env-file=.env jankokl/detekcija-rupa
-```
-
-This will pull and run the latest container image from Docker Hub.
-
-Docker Hub link: [jankokl/detekcija-rupa](https://hub.docker.com/repository/docker/jankokl/detekcija-rupa)
+- **Video thread** — reads frames, runs YOLO + MiDaS, writes to database
+- **Sync thread** — periodically syncs offline logs to database  
+- **Notification thread** — sends Telegram alerts to admin on HIGH/CRITICAL detections
 
 ---
 
 ## APM & Monitoring
 
-The application exposes Prometheus-compatible metrics on `/metrics` (default port: `8000`).
-
-To monitor metrics using Prometheus + Grafana:
-
-### Step 1: Start Monitoring Stack
-
-```bash
-docker-compose up
-```
-
-This starts:
-- Prometheus (on port 9090)
-- Grafana (on port 3000)
-
-### Step 2: View Metrics
-
-- Prometheus UI: [http://localhost:9090](http://localhost:9090)
-- Grafana Dashboard: [http://localhost:3000](http://localhost:3000)
-
-Metrics include:
-- `pothole_detections_total`
-- `pothole_severity_<level>_total`
-- `frame_processing_duration_seconds`
-
-Grafana is preconfigured to scrape these via Prometheus.
-
 > ![Grafana dashboard](imgs/grafana.png)
 
----
+Prometheus metrics exposed on port `8000`:
 
-##  Telegram Bot
+| Metric | Description |
+|---|---|
+| `pothole_detections_total` | Total potholes detected |
+| `pothole_severity_low_total` | Low severity count |
+| `pothole_severity_medium_total` | Medium severity count |
+| `pothole_severity_high_total` | High severity count |
+| `pothole_severity_critical_total` | Critical severity count |
+| `frame_processing_duration_seconds` | Frame processing time |
 
-Interact with the system via Telegram. Available commands:
-
-- `/start` 
-- `/locations` – Browse pothole locations
-- `/map` – View all on Google Maps
-- `/stats` – System statistics
-- `/help` – List of commands
-
-![Telegram bot screenshot.](imgs/photo_2025-06-12_00-26-59.jpg)
-
----
-
-##  CI/CD Pipeline
-
-GitHub Actions build the Docker image and push it to Docker Hub on each commit to `main`.
+- Prometheus UI: `http://localhost:9090`
+- Grafana Dashboard: `http://localhost:3000`
 
 ---
 
-##  Built With
+## Built With
 
 - Python 3.11
 - OpenCV
@@ -153,19 +90,73 @@ GitHub Actions build the Docker image and push it to Docker Hub on each commit t
 - MiDaS
 - SQLite
 - Docker
-- Prometheus
-- Grafana
+- Prometheus + Grafana
 - Telegram Bot API
 
 ---
 
-##  Author
+## CI/CD
+
+GitHub Actions builds and pushes the Docker image to Docker Hub on every commit to `main`.
+
+Docker Hub: [jankokl/detekcija-rupa](https://hub.docker.com/repository/docker/jankokl/detekcija-rupa)
+
+---
+
+## For Developers
+
+<details>
+<summary>Click to expand setup instructions</summary>
+
+### Run Locally
+
+```bash
+git clone https://github.com/jankokl/DetekcijaRupa.git
+cd DetekcijaRupa
+pip install -r requirements.txt
+```
+
+Create a `.env` file in the project root:
+
+```env
+BOT_TOKEN=           # from @BotFather on Telegram
+ADMIN_CHAT_ID=       # your chat ID from @userinfobot
+
+USE_LIVE_CAMERA=False
+VIDEO_FILE=p.mp4
+USE_SIMULATION=True
+YOLO_MODEL_PATH=best.pt
+```
+
+Run:
+
+```bash
+cd app
+python main.py
+```
+
+### Run with Docker
+
+```bash
+docker run -p 8000:8000 --env-file=.env jankokl/detekcija-rupa
+```
+
+### Run Full Stack (with Prometheus + Grafana)
+
+```bash
+docker compose up -d
+```
+
+</details>
+
+---
+
+
+## Author
 
 **Janko Klikovac**  
 GitHub: [@JankoKl](https://github.com/JankoKl)
 
----
 
-## 
 
-This project uses open-source components and is intended for educational and research purposes.
+
