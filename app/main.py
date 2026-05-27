@@ -37,8 +37,6 @@ class PotholeDetectionSystem:
         self.geolocator = Nominatim(user_agent="pothole_detector")
         self.detection_queue = Queue()
         self.notification_queue = Queue()
-        # Fix: running=True ovde, ne na pocetku process_video,
-        # jer sync_thread krece odmah i mora da vidi True
         self.running = True
 
         # Start Prometheus metrics server
@@ -59,15 +57,17 @@ class PotholeDetectionSystem:
         else:
             self.gps = RealGPS(config.GPS_PORT, config.GPS_BAUDRATE)
 
+        if config.HEADLESS:
+            logger.info("Running in HEADLESS mode — no GUI window")
+        else:
+            logger.info("Running in GUI mode — press Q to quit")
+
     def process_video(self):
         """Main video processing loop"""
-        # Fix: uklonjen dupli serial.Serial() otvor koji je bio ovde
-        # GPS se vec inicijalizuje kroz self.gps u __init__
         cap = None
         video_writer = None
 
         try:
-            # Open video or webcam
             if config.USE_LIVE_CAMERA:
                 cap = cv2.VideoCapture(config.CAMERA_INDEX)
                 logger.info("Using live webcam feed.")
@@ -78,10 +78,16 @@ class PotholeDetectionSystem:
                 logger.info(f"Using video file: {config.VIDEO_FILE}")
 
             if not cap.isOpened():
-                raise ValueError("Could not open video source")
+                if config.HEADLESS:
+                    # Na serveru nema video fajla ni kamere — to je ok,
+                    # bot i dalje radi normalno sa postojecim podacima u bazi
+                    logger.info("No video source available — bot running with existing database data")
+                    return
+                else:
+                    raise ValueError("Could not open video source")
 
-            # Prepare video writer if enabled
-            if config.SAVE_VIDEO:
+            if config.SAVE_VIDEO and not config.HEADLESS:
+                os.makedirs(os.path.dirname(config.VIDEO_OUTPUT_PATH), exist_ok=True)
                 fourcc = cv2.VideoWriter_fourcc(*'XVID')
                 video_writer = cv2.VideoWriter(
                     config.VIDEO_OUTPUT_PATH,
@@ -113,7 +119,7 @@ class PotholeDetectionSystem:
                     else:
                         gps_data = last_gps_data
 
-                    if gps_data:
+                    if gps_data and not config.HEADLESS:
                         gps_text = f"{gps_data['city']}, {gps_data['region']} ({gps_data['latitude']:.5f}, {gps_data['longitude']:.5f})"
                         cv2.putText(frame, gps_text, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
@@ -136,7 +142,6 @@ class PotholeDetectionSystem:
                                                 f"Severity={pothole.severity.value}, "
                                                 f"Depth={pothole.depth:.3f}m, "
                                                 f"Location=({pothole.latitude:.6f}, {pothole.longitude:.6f})")
-                                    # Posalji notifikaciju adminima za HIGH i CRITICAL rupe
                                     self.notification_queue.put(pothole)
                             except Exception as e:
                                 logger.error(f"Database error: {e}")
@@ -145,9 +150,11 @@ class PotholeDetectionSystem:
                     if config.SAVE_VIDEO and video_writer:
                         video_writer.write(annotated_frame)
 
-                    cv2.imshow('Pothole Detection', annotated_frame)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        break
+                    # GUI — samo lokalno, nikad na serveru
+                    if not config.HEADLESS:
+                        cv2.imshow('Pothole Detection', annotated_frame)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            break
 
         except Exception as e:
             logger.error(f"Processing error: {e}")
@@ -157,7 +164,8 @@ class PotholeDetectionSystem:
                 cap.release()
             if video_writer:
                 video_writer.release()
-            cv2.destroyAllWindows()
+            if not config.HEADLESS:
+                cv2.destroyAllWindows()
             self.running = False
             logger.info("Video processing stopped")
             if isinstance(self.gps, RealGPS):

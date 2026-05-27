@@ -28,17 +28,20 @@ class Config:
     CAMERA_INDEX: int = int(os.getenv('CAMERA_INDEX', 0))
 
     # Output
-    SAVE_VIDEO: bool = os.getenv('SAVE_VIDEO', 'True') == 'True'
+    SAVE_VIDEO: bool = os.getenv('SAVE_VIDEO', 'False') == 'True'
     VIDEO_OUTPUT_PATH: str = os.getenv('VIDEO_OUTPUT_PATH', '.output/demo_output.avi')
     VIDEO_FPS: int = int(os.getenv('VIDEO_FPS', 20))
+
+    # Headless mod — True na serveru, False lokalno
+    # Na serveru nema ekrana pa cv2.imshow pada
+    # Lokalno False da vidis GUI prozor sa detekcijom
+    HEADLESS: bool = os.getenv('HEADLESS', 'False') == 'True'
 
     # Database
     DB_PATH: str = os.getenv('DB_PATH', 'pothole.db')
 
     # Telegram
     BOT_TOKEN: str = os.getenv('BOT_TOKEN', '')
-    # Chat ID admina — ko god ima ovaj ID dobija admin ulogu automatski
-    # Kako pronaci svoj chat ID: posalji /start botu @userinfobot na Telegramu
     ADMIN_CHAT_ID: str = os.getenv('ADMIN_CHAT_ID', '')
 
     # Paths
