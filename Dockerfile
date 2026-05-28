@@ -24,6 +24,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy everything else
 COPY . .
+RUN chmod -R 777 /app/app/data/
+
 
 # Create a non-root user *after* installing packages (best practice)
 RUN adduser --disabled-password --gecos "" --uid 10001 appuser
