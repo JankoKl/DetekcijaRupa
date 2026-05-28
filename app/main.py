@@ -15,7 +15,7 @@ from geopy.geocoders import Nominatim
 
 from config import config
 from database import PotholeDatabase
-from detector import PotholeDetector
+
 from bot import PotholeBot
 from gps_provider import SimulatedGPS, RealGPS
 from utils import save_detection_image
@@ -32,12 +32,18 @@ logger = logging.getLogger(__name__)
 class PotholeDetectionSystem:
     def __init__(self):
         self.db = PotholeDatabase()
-        self.detector = PotholeDetector()
         self.bot = PotholeBot(self.db)
+        self.running = True
+
+        if config.BOT_ONLY:
+            logger.info("BOT_ONLY mode — skipping detector, GPS, and Prometheus initialization")
+            return
+
+        from detector import PotholeDetector
+        self.detector = PotholeDetector()
         self.geolocator = Nominatim(user_agent="pothole_detector")
         self.detection_queue = Queue()
         self.notification_queue = Queue()
-        self.running = True
 
         # Start Prometheus metrics server
         start_http_server(8000)
@@ -79,8 +85,6 @@ class PotholeDetectionSystem:
 
             if not cap.isOpened():
                 if config.HEADLESS:
-                    # Na serveru nema video fajla ni kamere — to je ok,
-                    # bot i dalje radi normalno sa postojecim podacima u bazi
                     logger.info("No video source available — bot running with existing database data")
                     return
                 else:
@@ -197,7 +201,11 @@ class PotholeDetectionSystem:
             time.sleep(60)
 
     def run(self):
-        """Run the complete system"""
+        if config.BOT_ONLY:
+            logger.info("BOT_ONLY mode — skipping video and sync threads")
+            self.bot.run()
+            return
+
         video_thread = threading.Thread(target=self.process_video)
         video_thread.start()
 
