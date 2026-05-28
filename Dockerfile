@@ -33,5 +33,13 @@ RUN adduser --disabled-password --gecos "" --uid 10001 appuser
 # Switch to non-root user
 USER appuser
 
+# Create a non-root user *after* installing packages (best practice)
+RUN adduser --disabled-password --gecos "" --uid 10001 appuser
+
+RUN chmod +x /app/entrypoint.sh
+
+# Switch to non-root user
+USER appuser
+
 # Default command to run the app
-CMD ["python", "app/main.py"]
+CMD ["/app/entrypoint.sh"]
