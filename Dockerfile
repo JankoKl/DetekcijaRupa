@@ -25,14 +25,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy everything else
 COPY . .
 
-
-
-# Create a non-root user *after* installing packages (best practice)
-RUN adduser --disabled-password --gecos "" --uid 10001 appuser
-
-# Switch to non-root user
-USER appuser
-
 # Create a non-root user *after* installing packages (best practice)
 RUN adduser --disabled-password --gecos "" --uid 10001 appuser
 
