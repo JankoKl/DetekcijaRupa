@@ -1,14 +1,14 @@
 # 🚗 Pothole Detection System
 
-A real-time computer vision system that automatically detects and maps road potholes from a moving vehicle. Mounted camera feeds into a YOLO + MiDaS pipeline that classifies severity, records GPS location, and pushes live alerts to a Telegram bot.
+A real-time computer vision system that automatically detects and maps road potholes from a moving vehicle. A mounted camera feeds into a YOLOv8 + MiDaS pipeline that classifies severity, records GPS location, and pushes live alerts to a Telegram bot.
 
-![Demonstration gif](https://github.com/user-attachments/assets/2c675218-1e69-4023-a27a-ad3767bbf9e1)
+![Demonstration](https://private-user-images.githubusercontent.com/152533349/454928580-2c675218-1e69-4023-a27a-ad3767bbf9e1.gif)
 
 ---
 
-## 📱 Try the Telegram Bot
+## 📱 Try the Live Bot
 
-**No installation needed** — just open the bot and start exploring detected potholes:
+**No installation needed** — the bot runs 24/7 on [Fly.io](https://fly.io) with a pre-seeded demo database.
 
 👉 **[Open Bot on Telegram](https://t.me/potholedetectionBOT)**
 
@@ -17,22 +17,21 @@ A real-time computer vision system that automatically detects and maps road poth
 ## Features
 
 - Real-time pothole detection (YOLOv8)
-- MiDaS-based depth estimation
-- Severity classification (Low / Medium / High / Critical)
-- GPS location tagging (real or simulated)
-- Duplicate detection prevention
+- MiDaS depth estimation per pothole
+- Severity classification: Low / Medium / High / Critical
+- GPS location tagging (real hardware or simulated)
+- Duplicate detection prevention via Haversine radius check
 - Detection images saved per pothole
-- Offline mode with automatic resync
-- Telegram bot with interactive menus and role-based access
-- Admin real-time alerts for HIGH and CRITICAL potholes
+- Offline mode with automatic database resync
+- Telegram bot with interactive inline menus and role-based access
+- Admin real-time alerts for HIGH and CRITICAL detections
 - Prometheus metrics + Grafana dashboard
 - Dockerized with CI/CD via GitHub Actions → Docker Hub
+- `BOT_ONLY` mode for lightweight cloud deployment (no CV models loaded)
 
 ---
 
-## 📱 Telegram Bot
-
-The bot provides a full interactive interface — no commands to memorize, everything is accessible through inline buttons.
+## 📱 Telegram Bot Commands
 
 | Command | Description |
 |---|---|
@@ -40,7 +39,7 @@ The bot provides a full interactive interface — no commands to memorize, every
 | `/locations` | Browse potholes by region |
 | `/severity` | Filter by severity level |
 | `/map` | View all locations on Google Maps |
-| `/latest` | Last 5 detected potholes with photos |
+| `/latest` | Last 5 detected potholes |
 | `/stats` | Statistics by severity and region |
 | `/status` | System status and user count |
 | `/export` | Download all data as CSV |
@@ -52,19 +51,21 @@ The bot provides a full interactive interface — no commands to memorize, every
 
 ## System Architecture
 
-![Diagram](imgs/Dijagram.png "System Architecture Diagram")
+![Diagram](imgs/Dijagram.png)
 
 Three parallel threads run simultaneously:
 
 - **Video thread** — reads frames, runs YOLO + MiDaS, writes to database
-- **Sync thread** — periodically syncs offline logs to database  
+- **Sync thread** — periodically syncs offline logs to the database
 - **Notification thread** — sends Telegram alerts to admin on HIGH/CRITICAL detections
+
+In `BOT_ONLY` mode, only the bot thread runs — no CV models are loaded, making it suitable for low-resource cloud deployments.
 
 ---
 
 ## APM & Monitoring
 
-> ![Grafana dashboard](imgs/grafana.png)
+![Grafana dashboard](imgs/grafana.png)
 
 Prometheus metrics exposed on port `8000`:
 
@@ -84,20 +85,21 @@ Prometheus metrics exposed on port `8000`:
 
 ## Built With
 
-- Python 3.11
+- Python 3.13
 - OpenCV
-- PyTorch + YOLOv8
+- PyTorch + YOLOv8 (Ultralytics)
 - MiDaS
 - SQLite
 - Docker
 - Prometheus + Grafana
-- Telegram Bot API
+- python-telegram-bot
+- Fly.io (cloud deployment)
 
 ---
 
 ## CI/CD
 
-GitHub Actions builds and pushes the Docker image to Docker Hub on every commit to `main`.
+GitHub Actions builds and pushes the Docker image to Docker Hub on every commit to `main` (except documentation-only changes).
 
 Docker Hub: [jankokl/detekcija-rupa](https://hub.docker.com/repository/docker/jankokl/detekcija-rupa)
 
@@ -116,7 +118,13 @@ cd DetekcijaRupa
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project root:
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Minimum required variables:
 
 ```env
 BOT_TOKEN=           # from @BotFather on Telegram
@@ -126,6 +134,8 @@ USE_LIVE_CAMERA=False
 VIDEO_FILE=p.mp4
 USE_SIMULATION=True
 YOLO_MODEL_PATH=best.pt
+BOT_ONLY=False
+HEADLESS=False
 ```
 
 Run:
@@ -147,16 +157,19 @@ docker run -p 8000:8000 --env-file=.env jankokl/detekcija-rupa
 docker compose up -d
 ```
 
+### Deploy to Fly.io (BOT_ONLY mode)
+
+```bash
+fly launch --region fra
+fly secrets set BOT_TOKEN=... ADMIN_CHAT_ID=... BOT_ONLY=True HEADLESS=True DB_PATH=app/data/pothole.db
+fly deploy
+```
+
 </details>
 
 ---
 
-
 ## Author
 
-**Janko Klikovac**  
+**Janko Klikovac**
 GitHub: [@JankoKl](https://github.com/JankoKl)
-
-
-
-
