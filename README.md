@@ -2,7 +2,7 @@
 
 A real-time computer vision system that automatically detects and maps road potholes from a moving vehicle. A mounted camera feeds into a YOLOv8 + MiDaS pipeline that classifies severity, records GPS location, and pushes live alerts to a Telegram bot.
 
-![Demonstration](https://private-user-images.githubusercontent.com/152533349/454928580-2c675218-1e69-4023-a27a-ad3767bbf9e1.gif)
+![Demonstration gif](https://github.com/user-attachments/assets/2c675218-1e69-4023-a27a-ad3767bbf9e1)
 
 ---
 
