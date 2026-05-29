@@ -9,3 +9,4 @@ python-telegram-bot
 python-dotenv
 timm
 prometheus-client
+pandas
