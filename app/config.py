@@ -39,7 +39,7 @@ class Config:
     BOT_ONLY: bool = os.getenv('BOT_ONLY', 'False') == 'True'
 
     # Database
-    DB_PATH: str = os.getenv('DB_PATH', 'pothole.db')
+    DB_PATH: str = os.getenv('DB_PATH', os.path.join('data', 'pothole.db'))
 
     # Telegram
     BOT_TOKEN: str = os.getenv('BOT_TOKEN', '')
