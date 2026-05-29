@@ -6,11 +6,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Perzistentni storage za bazu i slike izvan kontejnera
       - ./data:/app/data
       - ./.output:/app/.output
-    depends_on:
-      - prometheus
 
   prometheus:
     image: prom/prometheus
@@ -19,6 +16,8 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - app
 
   grafana:
     image: grafana/grafana

@@ -8,32 +8,33 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies (OpenCV, Ultralytics needs these)
+# System dependencies required by OpenCV, PyTorch/Ultralytics and video processing
 RUN apt-get update && apt-get install -y \
-    libgl1 libglib2.0-0 ffmpeg \
+    libgl1 \
+    libglib2.0-0 \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Create data/output folders before switching user
-RUN mkdir -p /app/data /app/.output && chmod -R 777 /app/data /app/.output
-
-# Copy requirements first (for caching)
+# Copy requirements first for better Docker layer caching
 COPY requirements.txt .
 
-# Install dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy everything else
+# Copy application code
 COPY . .
-RUN chmod -R 777 /app/app/data/
 
+# Runtime writable directories
+RUN mkdir -p /app/data /app/.output \
+    && chmod -R 777 /app/data /app/.output
 
-# Create a non-root user *after* installing packages (best practice)
+# Create non-root user
 RUN adduser --disabled-password --gecos "" --uid 10001 appuser
 
+# Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
-# Switch to non-root user
+# Run as non-root
 USER appuser
 
-# Default command to run the app
 CMD ["/app/entrypoint.sh"]
