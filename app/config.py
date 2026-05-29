@@ -36,6 +36,7 @@ class Config:
     # Na serveru nema ekrana pa cv2.imshow pada
     # Lokalno False da vidis GUI prozor sa detekcijom
     HEADLESS: bool = os.getenv('HEADLESS', 'False') == 'True'
+    BOT_ONLY: bool = os.getenv('BOT_ONLY', 'False') == 'True'
 
     # Database
     DB_PATH: str = os.getenv('DB_PATH', 'pothole.db')
