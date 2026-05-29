@@ -27,8 +27,7 @@ A real-time computer vision system that automatically detects and maps road poth
 - Admin real-time alerts for HIGH and CRITICAL detections
 - Prometheus metrics + Grafana dashboard
 - Dockerized with CI/CD via GitHub Actions → Docker Hub
-- `BOT_ONLY` mode for lightweight cloud deployment (no CV models loaded)
-
+- `BOT_ONLY` mode for lightweight cloud deployment 
 ---
 
 ## 📱 Telegram Bot Commands
